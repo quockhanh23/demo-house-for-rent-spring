@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,7 +20,7 @@ public class User {
     private Long id;
     private String uuid;
     @Size(min = 3, max = 60)
-    @Column(length = 60)
+    @Column(length = 60, unique = true)
     private String username;
     @Size(min = 3, max = 20)
     @Column(length = 20)
@@ -26,4 +28,14 @@ public class User {
     @Size(min = 3, max = 20)
     @Column(length = 20)
     private String confirmPassword;
+    @Column(length = 20)
+    private String phone;
+    @Column(length = 30)
+    private String email;
+    private Date createdAt;
+    private Date updatedAt;
+    @Column(length = 20)
+    private String status;
+    @Lob
+    private String avatar;
 }
