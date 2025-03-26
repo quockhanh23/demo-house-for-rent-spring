@@ -1,5 +1,7 @@
 package com.example.testspringweb.controller;
 
+import com.example.testspringweb.auth.JWTService;
+import com.example.testspringweb.auth.JwtResponse;
 import com.example.testspringweb.dto.LoginRequest;
 import com.example.testspringweb.dto.UserDTORequest;
 import com.example.testspringweb.dto.UserDTOResponse;
@@ -14,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -38,6 +41,9 @@ public class UserController {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private JWTService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody User user) {
@@ -77,10 +83,17 @@ public class UserController {
             Authentication authentication = authenticationManager.authenticate
                     (new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            UserDetails userPrinciple = userService.loadUserByUsername(loginRequest.getUsername());
+            String jwt = jwtService.generateToken(userPrinciple);
+            JwtResponse jwtResponse = new JwtResponse();
+            jwtResponse.setToken(jwt);
+            jwtResponse.setRoles(userPrinciple.getAuthorities());
+            jwtResponse.setUsername(userPrinciple.getUsername());
+            return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 }

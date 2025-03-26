@@ -20,11 +20,18 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JWTService jwtService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userPrinciple = userService.loadUserByUsername("khanh1");
+
+        String token = httpServletRequest.getHeader("Authorization");
+        if (token != null && !"".equals(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
+            token = token.substring(7);
+            String value = jwtService.extractUsername(token);
+            UserDetails userPrinciple = userService.loadUserByUsername(value);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     userPrinciple, null, userPrinciple.getAuthorities());
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));

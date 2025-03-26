@@ -15,7 +15,7 @@ public class CategoryController {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @PostMapping("/getAll")
+    @GetMapping("/getAll")
     public ResponseEntity<Object> getAll() {
         return new ResponseEntity<>(categoryRepository.findAll(), HttpStatus.OK);
     }
