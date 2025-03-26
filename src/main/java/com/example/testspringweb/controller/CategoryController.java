@@ -16,25 +16,25 @@ public class CategoryController {
     private CategoryRepository categoryRepository;
 
     @PostMapping("/getAll")
-    ResponseEntity<Object> getAll() {
+    public ResponseEntity<Object> getAll() {
         return new ResponseEntity<>(categoryRepository.findAll(), HttpStatus.OK);
     }
 
     @PostMapping("/createCategory")
-    ResponseEntity<Object> createCategory(@RequestBody Category category) {
+    public ResponseEntity<Object> createCategory(@RequestBody Category category) {
         categoryRepository.save(category);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/updateCategory")
-    ResponseEntity<Object> updateCategory(@RequestBody Category category, @RequestParam Long idCategory) {
+    public ResponseEntity<Object> updateCategory(@RequestBody Category category, @RequestParam Long idCategory) {
         categoryRepository.findById(idCategory);
         categoryRepository.save(category);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @DeleteMapping("")
-    ResponseEntity<Object> deleteCategory(@RequestParam Long idCategory) {
+    @DeleteMapping("deleteCategory")
+    public ResponseEntity<Object> deleteCategory(@RequestParam Long idCategory) {
         categoryRepository.deleteById(idCategory);
         return new ResponseEntity<>(HttpStatus.OK);
     }

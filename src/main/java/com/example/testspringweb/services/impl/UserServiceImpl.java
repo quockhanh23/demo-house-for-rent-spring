@@ -1,19 +1,22 @@
 package com.example.testspringweb.services.impl;
 
-import com.example.testspringweb.dto.LoginRequest;
 import com.example.testspringweb.dto.UserDTORequest;
 import com.example.testspringweb.dto.UserDTOResponse;
 import com.example.testspringweb.exption.InvalidException;
+import com.example.testspringweb.models.Role;
 import com.example.testspringweb.models.User;
+import com.example.testspringweb.models.UserPrinciple;
 import com.example.testspringweb.repository.UserRepository;
 import com.example.testspringweb.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -25,23 +28,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTOResponse register(User user) {
-        log.info("bắt đầu vào hàm register");
-        User user1 = userRepository.save(user);
-        UserDTOResponse userDTOResponse = new UserDTOResponse();
-        BeanUtils.copyProperties(user1, userDTOResponse);
-        log.info("userDTOResponse: {}", userDTOResponse);
-        return userDTOResponse;
-    }
-
-    @Override
-    public UserDTOResponse checkLogin(LoginRequest loginRequest) {
-        User user = userRepository.findUserByUsernameAndPassword(loginRequest.getUsername(), loginRequest.getPassword());
-        if (Objects.isNull(user)) {
-            throw new InvalidException("Sai tên đăng nhập hoặc mật khẩu");
-        }
-        UserDTOResponse userDTOResponse = new UserDTOResponse();
-        BeanUtils.copyProperties(user, userDTOResponse);
-        return userDTOResponse;
+        userRepository.save(user);
+        return null;
     }
 
     @Override
@@ -81,5 +69,27 @@ public class UserServiceImpl implements UserService {
         UserDTOResponse userDTOResponse = new UserDTOResponse();
         BeanUtils.copyProperties(user, userDTOResponse);
         return userDTOResponse;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findUserByUsername(username);
+        if (Objects.nonNull(user)) {
+            UserPrinciple userPrinciple = new UserPrinciple();
+            userPrinciple.setId(user.getId());
+            userPrinciple.setUsername(user.getUsername());
+            userPrinciple.setPassword(user.getPassword());
+
+            Set<Role> roleSet = user.getRoles();
+            List<SimpleGrantedAuthority> simpleGrantedAuthorityList = new ArrayList<>();
+
+            for (Role role : roleSet) {
+                SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(role.getName());
+                simpleGrantedAuthorityList.add(simpleGrantedAuthority);
+            }
+            userPrinciple.setRoles(simpleGrantedAuthorityList);
+            return userPrinciple;
+        }
+        return null;
     }
 }

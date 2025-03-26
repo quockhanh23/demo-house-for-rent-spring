@@ -3,19 +3,24 @@ package com.example.testspringweb.controller;
 import com.example.testspringweb.dto.LoginRequest;
 import com.example.testspringweb.dto.UserDTORequest;
 import com.example.testspringweb.dto.UserDTOResponse;
+import com.example.testspringweb.models.Role;
 import com.example.testspringweb.models.User;
+import com.example.testspringweb.repository.RoleRepository;
 import com.example.testspringweb.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @CrossOrigin("*")
@@ -25,14 +30,29 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
     @PostMapping("/register")
-    ResponseEntity<Object> registerUser(@RequestBody User user) {
-        UserDTOResponse userDTOResponse = userService.register(user);
-        return new ResponseEntity<>(userDTOResponse, HttpStatus.CREATED);
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        Set<Role> roles = new HashSet<>();
+        Role role = (user.getRoles() != null) ?
+                roleRepository.findByName("ADMIN") : roleRepository.findByName("USER");
+        roles.add(role);
+        user.setRoles(roles);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userService.register(user);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PostMapping("/update")
-    ResponseEntity<Object> updateInformation(@RequestBody UserDTORequest dtoRequest) {
+    public ResponseEntity<Object> updateInformation(@RequestBody UserDTORequest dtoRequest) {
         UserDTOResponse userDTOResponse = userService.updateUser(dtoRequest);
         return new ResponseEntity<>(userDTOResponse, HttpStatus.OK);
     }
@@ -44,7 +64,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<Object> login(@RequestBody @Valid LoginRequest loginRequest, BindingResult errors) {
+    public ResponseEntity<Object> login(@RequestBody @Valid LoginRequest loginRequest, BindingResult errors) {
         if (errors.hasErrors()) {
             Map<String, String> map = new HashMap<>();
             List<FieldError> list = errors.getFieldErrors();
@@ -53,6 +73,14 @@ public class UserController {
             }
             return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(userService.checkLogin(loginRequest), HttpStatus.OK);
+        try {
+            Authentication authentication = authenticationManager.authenticate
+                    (new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

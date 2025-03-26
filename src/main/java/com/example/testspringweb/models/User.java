@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -22,11 +23,7 @@ public class User {
     @Size(min = 3, max = 60)
     @Column(length = 60, unique = true)
     private String username;
-    @Size(min = 3, max = 20)
-    @Column(length = 20)
     private String password;
-    @Size(min = 3, max = 20)
-    @Column(length = 20)
     private String confirmPassword;
     @Column(length = 20)
     private String phone;
@@ -38,4 +35,10 @@ public class User {
     private String status;
     @Lob
     private String avatar;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id")})
+    private Set<Role> roles;
 }
