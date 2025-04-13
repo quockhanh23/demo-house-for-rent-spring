@@ -1,5 +1,6 @@
 package com.example.testspringweb.exption;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +18,16 @@ public class GlobalExceptionHandler {
         invalidException.printStackTrace();
         errorMessage.setDescription(webRequest.getDescription(false));
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<Object> handleExpiredJwtException(ExpiredJwtException expiredJwtException, WebRequest webRequest) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setStatusCode(HttpStatus.UNAUTHORIZED.value());
+        errorMessage.setMessage(expiredJwtException.getMessage());
+        expiredJwtException.printStackTrace();
+        errorMessage.setDescription(webRequest.getDescription(false));
+        return new ResponseEntity<>(errorMessage, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)

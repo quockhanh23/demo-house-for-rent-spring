@@ -30,13 +30,7 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(restServicesEntryPoint()).accessDeniedHandler(customAccessDeniedHandler()))
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers("/api/users/register", "/api/users/login").permitAll()
-                                .requestMatchers( "/api/houses/**").hasAuthority("ADMIN")
-                                .requestMatchers( "/api/categories/**").hasAuthority("USER")
-                                .requestMatchers( "/api/comments/**").hasAuthority("USER")
-                                .requestMatchers( "/api/notifications/**").hasAuthority("USER")
-                                .requestMatchers( "/api/reposts/**").hasAuthority("USER")
-                                .requestMatchers( "/api/reviews/**").hasAuthority("USER")
+                        request.requestMatchers("/api/**").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

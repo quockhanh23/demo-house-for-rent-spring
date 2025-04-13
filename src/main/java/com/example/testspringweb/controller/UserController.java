@@ -7,6 +7,7 @@ import com.example.testspringweb.dto.UserDTORequest;
 import com.example.testspringweb.dto.UserDTOResponse;
 import com.example.testspringweb.models.Role;
 import com.example.testspringweb.models.User;
+import com.example.testspringweb.models.UserPrinciple;
 import com.example.testspringweb.repository.RoleRepository;
 import com.example.testspringweb.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -57,11 +57,21 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
-    @PostMapping("/update")
+    @PutMapping("/updateUser")
     public ResponseEntity<Object> updateInformation(@RequestBody UserDTORequest dtoRequest) {
         UserDTOResponse userDTOResponse = userService.updateUser(dtoRequest);
         return new ResponseEntity<>(userDTOResponse, HttpStatus.OK);
     }
+
+    @PutMapping("/changePassword")
+    public ResponseEntity<Object> changePassword(@RequestBody UserDTORequest dtoRequest) {
+        userService.validateChangePassword(dtoRequest);
+        dtoRequest.setPassword(passwordEncoder.encode(dtoRequest.getPassword()));
+        dtoRequest.setPassword(passwordEncoder.encode(dtoRequest.getConfirmNewPassword()));
+        userService.changePassword(dtoRequest);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @GetMapping("/getDetailUser")
     public ResponseEntity<Object> getDetailUser(@RequestParam Long idUser) {
@@ -83,9 +93,10 @@ public class UserController {
             Authentication authentication = authenticationManager.authenticate
                     (new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            UserDetails userPrinciple = userService.loadUserByUsername(loginRequest.getUsername());
+            UserPrinciple userPrinciple = userService.loadUserByUsername(loginRequest.getUsername());
             String jwt = jwtService.generateToken(userPrinciple);
             JwtResponse jwtResponse = new JwtResponse();
+            jwtResponse.setId(userPrinciple.getId());
             jwtResponse.setToken(jwt);
             jwtResponse.setRoles(userPrinciple.getAuthorities());
             jwtResponse.setUsername(userPrinciple.getUsername());
@@ -94,6 +105,5 @@ public class UserController {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 }

@@ -1,6 +1,7 @@
 package com.example.testspringweb.services.impl;
 
 import com.example.testspringweb.common.HouseConstant;
+import com.example.testspringweb.dto.CountAddress;
 import com.example.testspringweb.exption.InvalidException;
 import com.example.testspringweb.models.Category;
 import com.example.testspringweb.models.House;
@@ -13,11 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class HouseServiceImpl implements HouseService {
@@ -46,6 +45,18 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public List<House> getAllHouseByAddress(String address) {
+        List<House> houseList = houseRepository.getAllByAddress(address);
+        if (CollectionUtils.isEmpty(houseList)) {
+            houseList = new ArrayList<>();
+        }
+        if (houseList.size() > 10) {
+            houseList = houseList.subList(0, 10);
+        }
+        return houseList;
+    }
+
+    @Override
     public House createHouse(House houseRequest) {
         Long idCategory = houseRequest.getCategoryId();
         Long idUser = houseRequest.getIdUser();
@@ -57,6 +68,7 @@ public class HouseServiceImpl implements HouseService {
         if (userOptional.isEmpty()) {
             throw new InvalidException("Invalid user");
         }
+        houseRequest.setUsername(userOptional.get().getUsername());
         return houseRepository.save(houseRequest);
     }
 
@@ -76,5 +88,12 @@ public class HouseServiceImpl implements HouseService {
         house.setStatus(status);
         house.setUpdatedAt(new Date());
         return houseRepository.save(house);
+    }
+
+    @Override
+    public List<CountAddress> getAllHouseBySameAddress(String sameAddress) {
+        List<CountAddress> countAddresses = houseRepository.getAllByDistrictAndCount(sameAddress);
+        if (CollectionUtils.isEmpty(countAddresses)) countAddresses = new ArrayList<>();
+        return countAddresses;
     }
 }

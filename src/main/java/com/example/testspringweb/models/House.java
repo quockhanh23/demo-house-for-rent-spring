@@ -26,6 +26,9 @@ public class House {
     private String name;
     @Column(length = 500)
     private String address;
+    private String province;
+    private String district;
+    private String ward;
     private Long categoryId;
     @Column(length = 100)
     @NotNull
@@ -40,6 +43,7 @@ public class House {
     private Boolean withGarden;
     @NotNull
     private Long idUser;
+    private String username;
     private Date createdAt;
     private Date updatedAt;
     @Column(length = 20)
@@ -47,4 +51,5 @@ public class House {
     @Lob
     private String image;
     private Integer acreage;
+    private String description;
 }

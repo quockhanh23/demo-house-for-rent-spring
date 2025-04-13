@@ -8,7 +8,9 @@ import lombok.Setter;
 public class UserDTORequest {
     private Long id;
     private String password;
-    private String confirmPassword;
+    private String newPassword;
+    private String confirmNewPassword;
     private String phone;
     private String email;
+    private String fullName;
 }

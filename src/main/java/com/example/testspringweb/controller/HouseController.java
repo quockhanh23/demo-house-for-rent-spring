@@ -1,5 +1,6 @@
 package com.example.testspringweb.controller;
 
+import com.example.testspringweb.dto.CountAddress;
 import com.example.testspringweb.models.House;
 import com.example.testspringweb.services.CommonService;
 import com.example.testspringweb.services.HouseService;
@@ -13,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -34,9 +36,21 @@ public class HouseController {
         return new ResponseEntity<>(housePage, HttpStatus.OK);
     }
 
+    @GetMapping("/getAllHouseByAddress")
+    public ResponseEntity<Object> getAllHouseByAddress(@RequestParam String address) {
+        List<House> house = houseService.getAllHouseByAddress(address);
+        return new ResponseEntity<>(house, HttpStatus.OK);
+    }
+
     @GetMapping("/getDetailHouse")
     public ResponseEntity<Object> getDetailHouse(@RequestParam Long idHouse) {
         House house = houseService.getDetailHouse(idHouse);
+        return new ResponseEntity<>(house, HttpStatus.OK);
+    }
+
+    @GetMapping("/getAllHouseBySameAddress")
+    public ResponseEntity<Object> getAllHouseBySameAddress(@RequestParam String address) {
+        List<CountAddress> house = houseService.getAllHouseBySameAddress(address);
         return new ResponseEntity<>(house, HttpStatus.OK);
     }
 
@@ -50,7 +64,7 @@ public class HouseController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("/updateHouse")
+    @PutMapping("/updateHouse")
     public ResponseEntity<Object> updateHouse(@RequestBody @Valid House houseRequest,
                                               @RequestParam Long idHouse, BindingResult errors) {
         Map<String, String> validate = commonService.validateInput(errors);
@@ -61,7 +75,7 @@ public class HouseController {
         return new ResponseEntity<>(house, HttpStatus.OK);
     }
 
-    @PostMapping("/updateStatus")
+    @PutMapping("/updateStatus")
     public ResponseEntity<Object> updateHouse(@RequestParam Long idHouse, @RequestParam String status) {
         House house = houseService.updateHouseStatus(idHouse, status);
         return new ResponseEntity<>(house, HttpStatus.OK);
