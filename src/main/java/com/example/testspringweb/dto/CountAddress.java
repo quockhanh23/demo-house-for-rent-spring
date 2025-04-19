@@ -9,5 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CountAddress {
     private String ward;
+    private String district;
     private long numberCount;
 }

@@ -1,5 +1,8 @@
 package com.example.testspringweb.common;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class NotificationConstant {
 
     public static final String SEEN = "Y";

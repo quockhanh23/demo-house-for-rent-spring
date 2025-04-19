@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface HouseService {
 
-    Page<House> getAllHousePage(Pageable pageable);
+    Page<House> getAllHousePage(Pageable pageable, String searchText);
 
     House getDetailHouse(Long houseId);
 
@@ -21,6 +21,10 @@ public interface HouseService {
 
     House updateHouseStatus(Long houseId, String status);
 
-    List<CountAddress> getAllHouseBySameAddress(String sameAddress);
+    List<CountAddress> getAllWardByDistrictAndCount(String sameAddress);
+
+    List<CountAddress> getAllDistrictAndCount();
+
+    List<House> getFiveMostExpensive();
 
 }

@@ -10,6 +10,7 @@ import com.example.testspringweb.repository.CategoryRepository;
 import com.example.testspringweb.repository.HouseRepository;
 import com.example.testspringweb.repository.UserRepository;
 import com.example.testspringweb.services.HouseService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,8 +32,13 @@ public class HouseServiceImpl implements HouseService {
     private UserRepository userRepository;
 
     @Override
-    public Page<House> getAllHousePage(Pageable pageable) {
-        return houseRepository.getAllHousePage(pageable);
+    public Page<House> getAllHousePage(Pageable pageable, String searchText) {
+        if (StringUtils.isEmpty(searchText)) {
+            return houseRepository.getAllHousePage(pageable);
+        } else {
+            searchText = searchText.trim();
+            return houseRepository.getAllHousePage(pageable, searchText);
+        }
     }
 
     @Override
@@ -91,9 +97,23 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public List<CountAddress> getAllHouseBySameAddress(String sameAddress) {
-        List<CountAddress> countAddresses = houseRepository.getAllByDistrictAndCount(sameAddress);
+    public List<CountAddress> getAllWardByDistrictAndCount(String sameAddress) {
+        List<CountAddress> countAddresses = houseRepository.getAllWardByDistrictAndCount(sameAddress);
         if (CollectionUtils.isEmpty(countAddresses)) countAddresses = new ArrayList<>();
         return countAddresses;
+    }
+
+    @Override
+    public List<CountAddress> getAllDistrictAndCount() {
+        List<CountAddress> countAddresses = houseRepository.getAllDistrictAndCount();
+        if (CollectionUtils.isEmpty(countAddresses)) countAddresses = new ArrayList<>();
+        return countAddresses;
+    }
+
+    @Override
+    public List<House> getFiveMostExpensive() {
+        List<House> houseList = houseRepository.getFiveMostExpensive();
+        if (CollectionUtils.isEmpty(houseList)) houseList = new ArrayList<>();
+        return houseList;
     }
 }

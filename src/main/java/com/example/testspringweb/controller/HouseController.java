@@ -30,9 +30,10 @@ public class HouseController {
 
     @GetMapping("/getAllPage")
     public ResponseEntity<Object> getAllHousePage(@RequestParam(defaultValue = "0", required = false) int page,
-                                                  @RequestParam(defaultValue = "10", required = false) int size) {
+                                                  @RequestParam(defaultValue = "10", required = false) int size,
+                                                  @RequestParam(required = false) String searchText) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<House> housePage = houseService.getAllHousePage(pageable);
+        Page<House> housePage = houseService.getAllHousePage(pageable, searchText);
         return new ResponseEntity<>(housePage, HttpStatus.OK);
     }
 
@@ -48,9 +49,21 @@ public class HouseController {
         return new ResponseEntity<>(house, HttpStatus.OK);
     }
 
-    @GetMapping("/getAllHouseBySameAddress")
-    public ResponseEntity<Object> getAllHouseBySameAddress(@RequestParam String address) {
-        List<CountAddress> house = houseService.getAllHouseBySameAddress(address);
+    @GetMapping("/getAllWardByDistrictAndCount")
+    public ResponseEntity<Object> getAllWardByDistrictAndCount(@RequestParam String address) {
+        List<CountAddress> house = houseService.getAllWardByDistrictAndCount(address);
+        return new ResponseEntity<>(house, HttpStatus.OK);
+    }
+
+    @GetMapping("/getAllDistrictAndCount")
+    public ResponseEntity<Object> getAllDistrictAndCount() {
+        List<CountAddress> house = houseService.getAllDistrictAndCount();
+        return new ResponseEntity<>(house, HttpStatus.OK);
+    }
+
+    @GetMapping("/topMostExpensive")
+    public ResponseEntity<Object> topMostExpensive() {
+        List<House> house = houseService.getFiveMostExpensive();
         return new ResponseEntity<>(house, HttpStatus.OK);
     }
 
