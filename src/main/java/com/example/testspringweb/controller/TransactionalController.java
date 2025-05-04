@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api/transactional")
+@RequestMapping("/api/transactions")
 public class TransactionalController {
 
     @Autowired
@@ -37,9 +37,10 @@ public class TransactionalController {
 
     // Lịch sử giao dịch của 1 ngôi nhà
     @GetMapping("/getAllTransactionalPageByHouseId")
-    public ResponseEntity<Object> getAllTransactionalPage(@RequestParam Long houseId,
-                                                          @RequestParam(defaultValue = "0", required = false) int page,
-                                                          @RequestParam(defaultValue = "10", required = false) int size) {
+    public ResponseEntity<Object> getAllTransactionalPage(
+            @RequestParam Long houseId,
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @RequestParam(defaultValue = "10", required = false) int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Transactional> housePage = transactionalService.getAllTransactionalByHouseId(houseId, pageable);
         return new ResponseEntity<>(housePage, HttpStatus.OK);
@@ -62,13 +63,13 @@ public class TransactionalController {
     }
 
     @PostMapping("/createTransactional")
-    public ResponseEntity<Object> createTransactional(@RequestBody @Valid Transactional transactional, BindingResult errors) {
+    public ResponseEntity<Object> createTransactional(
+            @RequestBody @Valid Transactional transactional, BindingResult errors) {
         Map<String, String> validate = commonService.validateInput(errors);
         if (Objects.nonNull(validate)) {
             return new ResponseEntity<>(validate, HttpStatus.BAD_REQUEST);
         }
-        transactionalService.createTransactional(transactional);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(transactionalService.createTransactional(transactional), HttpStatus.CREATED);
     }
 
     // Hủy thuê nhà trước 1 ngày
@@ -77,10 +78,10 @@ public class TransactionalController {
         return new ResponseEntity<>(transactionalService.cancelRental(transactionalId), HttpStatus.OK);
     }
 
-    @PostMapping("/updateTransactional")
-    public ResponseEntity<Object> updateTransactional(@RequestParam Long transactionalId) {
+    @PutMapping("/updateTransactional")
+    public ResponseEntity<Object> updateTransactional(@RequestParam Long transactionalId, @RequestParam String status) {
         try {
-            Transactional transactional = transactionalService.updateTransactional(transactionalId);
+            Transactional transactional = transactionalService.updateTransactional(transactionalId, status);
             return new ResponseEntity<>(transactional, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

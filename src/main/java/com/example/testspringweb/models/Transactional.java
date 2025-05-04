@@ -21,11 +21,11 @@ public class Transactional {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
-    private Long houseId;
-    @NotNull
+    private Long idHouse;
     private Long idUserHost;
     @NotNull
     private Long idUserGuest;
+    private String fullNameUserGuest;
     @Column(length = 20)
     private String status;
     private Date createdAt;

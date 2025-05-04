@@ -6,5 +6,6 @@ import lombok.experimental.UtilityClass;
 public class TransactionalConstant {
 
     public static final String PROCESSING = "PROCESSING";
+    public static final String CONFIRM = "CONFIRM";
     public static final String COMPLETED = "COMPLETED";
 }

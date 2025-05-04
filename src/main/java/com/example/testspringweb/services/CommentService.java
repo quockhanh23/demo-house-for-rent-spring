@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface CommentService {
 
-    Page<Comment> getAllCommentByHouseId(Long houseId, Pageable pageable);
+    Page<Comment> getAllCommentByHouseId(Long idHouse, Pageable pageable);
 
     boolean createComment(Long idUser, Long idHouse);
 

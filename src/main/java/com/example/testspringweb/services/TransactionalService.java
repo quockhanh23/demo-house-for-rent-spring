@@ -10,9 +10,9 @@ public interface TransactionalService {
 
     Transactional getDetailTransactional(Long transactionalId);
 
-    void createTransactional(Transactional transactional);
+    Transactional createTransactional(Transactional transactional);
 
-    Transactional updateTransactional(Long transactionalId);
+    Transactional updateTransactional(Long transactionalId,  String status);
 
     Transactional checkIn(Long transactionalId, Long userId);
 

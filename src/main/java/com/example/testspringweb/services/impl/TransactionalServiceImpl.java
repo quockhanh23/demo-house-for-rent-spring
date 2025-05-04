@@ -45,20 +45,21 @@ public class TransactionalServiceImpl implements TransactionalService {
     }
 
     @Override
-    public void createTransactional(Transactional transactionalRequest) {
+    public Transactional createTransactional(Transactional transactionalRequest) {
         validateDate(transactionalRequest.getStartTime(), transactionalRequest.getEndTime());
-        House house = houseService.getDetailHouse(transactionalRequest.getHouseId());
+        House house = houseService.getDetailHouse(transactionalRequest.getIdHouse());
         UserDTOResponse userHost = userService.getDetailUser(house.getIdUser());
         UserDTOResponse userGuest = userService.getDetailUser(transactionalRequest.getIdUserGuest());
         transactionalRequest.setCreatedAt(new Date());
         transactionalRequest.setUpdatedAt(new Date());
-        transactionalRequest.setHouseId(house.getId());
+        transactionalRequest.setIdHouse(house.getId());
         transactionalRequest.setIdUserHost(userHost.getId());
         transactionalRequest.setIdUserGuest(userGuest.getId());
+        transactionalRequest.setFullNameUserGuest(userGuest.getFullName());
         transactionalRequest.setStatus(TransactionalConstant.PROCESSING);
         transactionalRequest.setStartTime(transactionalRequest.getStartTime());
         transactionalRequest.setEndTime(transactionalRequest.getEndTime());
-        transactionalRepository.save(transactionalRequest);
+        return transactionalRepository.save(transactionalRequest);
     }
 
     void validateDate(Date startDate, Date endDate) {
@@ -69,13 +70,22 @@ public class TransactionalServiceImpl implements TransactionalService {
     }
 
     @Override
-    public Transactional updateTransactional(Long transactionalId) {
-        Transactional transactional = getDetailTransactional(transactionalId);
-        transactional.setStatus(TransactionalConstant.COMPLETED);
-        transactional.setUpdatedAt(new Date());
-        BigDecimal totalAmount = getTotalAmount(transactional);
-        transactional.setTotalAmount(totalAmount);
-        return transactionalRepository.save(transactional);
+    public Transactional updateTransactional(Long transactionalId, String status) {
+        if (TransactionalConstant.CONFIRM.equalsIgnoreCase(status)) {
+            Transactional transactional = getDetailTransactional(transactionalId);
+            transactional.setStatus(TransactionalConstant.CONFIRM);
+            transactional.setUpdatedAt(new Date());
+            return transactionalRepository.save(transactional);
+        }
+        if (TransactionalConstant.COMPLETED.equalsIgnoreCase(status)) {
+            Transactional transactional = getDetailTransactional(transactionalId);
+            transactional.setStatus(TransactionalConstant.COMPLETED);
+            transactional.setUpdatedAt(new Date());
+            BigDecimal totalAmount = getTotalAmount(transactional);
+            transactional.setTotalAmount(totalAmount);
+            return transactionalRepository.save(transactional);
+        }
+        throw new InvalidException("Không có trạng thái này");
     }
 
     @Override
@@ -117,7 +127,7 @@ public class TransactionalServiceImpl implements TransactionalService {
     @Override
     public boolean cancelRental(Long transactionalId) {
         Transactional transactional = getDetailTransactional(transactionalId);
-        House house = houseService.getDetailHouse(transactional.getHouseId());
+        House house = houseService.getDetailHouse(transactional.getIdHouse());
         Date endTime = transactional.getEndTime();
         Date date = new Date();
         long dateDifference = commonService.getDateDifference(endTime, date);
@@ -144,7 +154,7 @@ public class TransactionalServiceImpl implements TransactionalService {
     }
 
     private BigDecimal getTotalAmount(Transactional transactional) {
-        House house = houseService.getDetailHouse(transactional.getHouseId());
+        House house = houseService.getDetailHouse(transactional.getIdHouse());
         BigDecimal price = house.getPrice();
         Date checkoutTime = transactional.getCheckOutTime();
         Date startTime = transactional.getStartTime();

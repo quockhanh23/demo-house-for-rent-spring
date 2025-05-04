@@ -19,8 +19,8 @@ public class CommentServiceImpl implements CommentService {
     private CommentRepository commentRepository;
 
     @Override
-    public Page<Comment> getAllCommentByHouseId(Long houseId, Pageable pageable) {
-        return commentRepository.getAllCommentByHouseId(houseId, pageable);
+    public Page<Comment> getAllCommentByHouseId(Long idHouse, Pageable pageable) {
+        return commentRepository.getAllCommentByHouseId(idHouse, pageable);
     }
 
     @Override

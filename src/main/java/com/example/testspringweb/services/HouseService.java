@@ -11,13 +11,13 @@ public interface HouseService {
 
     Page<House> getAllHousePage(Pageable pageable, String searchText);
 
-    House getDetailHouse(Long houseId);
+    House getDetailHouse(Long idHouse);
 
     List<House> getAllHouseByAddress(String address);
 
     House createHouse(House house);
 
-    House updateHouse(House house, Long houseId);
+    House updateHouse(House house, Long idHouse);
 
     House updateHouseStatus(Long houseId, String status);
 

@@ -42,8 +42,8 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public House getDetailHouse(Long houseId) {
-        Optional<House> houseOptional = houseRepository.findById(houseId);
+    public House getDetailHouse(Long idHouse) {
+        Optional<House> houseOptional = houseRepository.findById(idHouse);
         if (houseOptional.isEmpty()) {
             throw new InvalidException("Invalid house");
         }
@@ -79,8 +79,8 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public House updateHouse(House house, Long houseId) {
-        getDetailHouse(houseId);
+    public House updateHouse(House house, Long idHouse) {
+        getDetailHouse(idHouse);
         return houseRepository.save(house);
     }
 

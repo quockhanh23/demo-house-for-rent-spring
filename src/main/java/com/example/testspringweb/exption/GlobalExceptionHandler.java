@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleException(InvalidException invalidException, WebRequest webRequest) {
+    public ResponseEntity<Object> handleException(Exception invalidException, WebRequest webRequest) {
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorMessage.setMessage(invalidException.getMessage());

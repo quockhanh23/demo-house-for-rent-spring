@@ -73,8 +73,7 @@ public class HouseController {
         if (Objects.nonNull(validate)) {
             return new ResponseEntity<>(validate, HttpStatus.BAD_REQUEST);
         }
-        houseService.createHouse(house);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(houseService.createHouse(house), HttpStatus.CREATED);
     }
 
     @PutMapping("/updateHouse")
@@ -88,8 +87,8 @@ public class HouseController {
         return new ResponseEntity<>(house, HttpStatus.OK);
     }
 
-    @PutMapping("/updateStatus")
-    public ResponseEntity<Object> updateHouse(@RequestParam Long idHouse, @RequestParam String status) {
+    @PutMapping("/updateStatusHouse")
+    public ResponseEntity<Object> updateStatusHouse(@RequestParam Long idHouse, @RequestParam String status) {
         House house = houseService.updateHouseStatus(idHouse, status);
         return new ResponseEntity<>(house, HttpStatus.OK);
     }
