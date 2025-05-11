@@ -59,6 +59,10 @@ public class TransactionalServiceImpl implements TransactionalService {
         transactionalRequest.setStatus(TransactionalConstant.PROCESSING);
         transactionalRequest.setStartTime(transactionalRequest.getStartTime());
         transactionalRequest.setEndTime(transactionalRequest.getEndTime());
+
+        BigDecimal totalAmount = getTotalAmount(transactionalRequest, TransactionalConstant.CREATE);
+        transactionalRequest.setTotalAmountExpected(totalAmount);
+
         return transactionalRepository.save(transactionalRequest);
     }
 
@@ -81,8 +85,8 @@ public class TransactionalServiceImpl implements TransactionalService {
             Transactional transactional = getDetailTransactional(transactionalId);
             transactional.setStatus(TransactionalConstant.COMPLETED);
             transactional.setUpdatedAt(new Date());
-            BigDecimal totalAmount = getTotalAmount(transactional);
-            transactional.setTotalAmount(totalAmount);
+            BigDecimal totalAmount = getTotalAmount(transactional, TransactionalConstant.UPDATE);
+            transactional.setTotalAmountActual(totalAmount);
             return transactionalRepository.save(transactional);
         }
         throw new InvalidException("Không có trạng thái này");
@@ -119,15 +123,18 @@ public class TransactionalServiceImpl implements TransactionalService {
                 .getTotalMonthlyByUserId(month, userId, TransactionalConstant.COMPLETED);
         BigDecimal total = BigDecimal.ZERO;
         for (int i = 0; i < getTotalMonthlyByUserId.size(); i++) {
-            total = total.add(getTotalMonthlyByUserId.get(i).getTotalAmount());
+            total = total.add(getTotalMonthlyByUserId.get(i).getTotalAmountActual());
         }
         return total;
     }
 
     @Override
-    public boolean cancelRental(Long transactionalId) {
+    public boolean cancelRental(Long transactionalId, Long userId) {
+        UserDTOResponse userLogin = userService.getDetailUser(userId);
         Transactional transactional = getDetailTransactional(transactionalId);
-        House house = houseService.getDetailHouse(transactional.getIdHouse());
+        if (!transactional.getIdUserGuest().equals(userLogin.getId())) {
+            throw new InvalidException("bạn không phải người thuê căn nhà này");
+        }
         Date endTime = transactional.getEndTime();
         Date date = new Date();
         long dateDifference = commonService.getDateDifference(endTime, date);
@@ -135,12 +142,7 @@ public class TransactionalServiceImpl implements TransactionalService {
             return false;
         }
         try {
-            BigDecimal price = house.getPrice();
-            BigDecimal dateDifferenceBigDecimal = BigDecimal.valueOf(dateDifference);
-            BigDecimal amountPayable = price.multiply(dateDifferenceBigDecimal);
-            transactional.setTotalAmount(amountPayable);
-            transactional.setUpdatedAt(new Date());
-            transactional.setStatus(TransactionalConstant.COMPLETED);
+            transactional.setStatus(TransactionalConstant.CANCELED);
             transactionalRepository.save(transactional);
         } catch (Exception e) {
             throw new InvalidException(e.getMessage());
@@ -153,13 +155,18 @@ public class TransactionalServiceImpl implements TransactionalService {
         return monthOfYear.contains(month);
     }
 
-    private BigDecimal getTotalAmount(Transactional transactional) {
+    private BigDecimal getTotalAmount(Transactional transactional, String type) {
         House house = houseService.getDetailHouse(transactional.getIdHouse());
         BigDecimal price = house.getPrice();
-        Date checkoutTime = transactional.getCheckOutTime();
+        Date checkoutTime;
+        if ("create".equals(type)) {
+            checkoutTime = transactional.getEndTime();
+        } else {
+            checkoutTime = transactional.getCheckOutTime();
+        }
         Date startTime = transactional.getStartTime();
         long dateDifference = commonService.getDateDifference(startTime, checkoutTime);
-        BigDecimal dateDifferenceBigDecimal = BigDecimal.valueOf(dateDifference);
+        BigDecimal dateDifferenceBigDecimal = BigDecimal.valueOf(dateDifference + 1);
         BigDecimal amountPayable = price.multiply(dateDifferenceBigDecimal);
         return amountPayable;
     }

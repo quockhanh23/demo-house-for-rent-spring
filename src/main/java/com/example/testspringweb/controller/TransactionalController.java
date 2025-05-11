@@ -74,8 +74,8 @@ public class TransactionalController {
 
     // Hủy thuê nhà trước 1 ngày
     @PostMapping("/cancelRental")
-    public ResponseEntity<Object> cancelRental(@RequestParam Long transactionalId) {
-        return new ResponseEntity<>(transactionalService.cancelRental(transactionalId), HttpStatus.OK);
+    public ResponseEntity<Object> cancelRental(@RequestParam Long transactionalId, @RequestParam Long userId) {
+        return new ResponseEntity<>(transactionalService.cancelRental(transactionalId, userId), HttpStatus.OK);
     }
 
     @PutMapping("/updateTransactional")

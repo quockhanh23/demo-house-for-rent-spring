@@ -22,5 +22,5 @@ public interface TransactionalService {
 
     BigDecimal totalMonthly(Long userId, String month);
 
-    boolean cancelRental(Long transactionalId);
+    boolean cancelRental(Long transactionalId, Long userId);
 }

@@ -36,5 +36,6 @@ public class Transactional {
     private Date endTime;
     private Date checkInTime;
     private Date checkOutTime;
-    private BigDecimal totalAmount;
+    private BigDecimal totalAmountExpected;
+    private BigDecimal totalAmountActual;
 }
