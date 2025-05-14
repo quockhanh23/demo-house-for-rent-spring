@@ -25,4 +25,5 @@ public class Notification {
     private Date updatedAt;
     @Column(length = 20)
     private String status;
+    private String action;
 }

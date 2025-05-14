@@ -11,6 +11,4 @@ public interface NotificationService {
     void createNotification(Long idHouse, Long idUserAction, String actionName);
 
     boolean updateNotification(Long idNotification);
-
-    void updateAllNotification(Long idUser, String status);
 }

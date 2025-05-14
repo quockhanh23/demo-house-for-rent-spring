@@ -2,13 +2,18 @@ package com.example.testspringweb.controller;
 
 import com.example.testspringweb.models.Comment;
 import com.example.testspringweb.services.CommentService;
+import com.example.testspringweb.services.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @CrossOrigin("*")
@@ -17,6 +22,8 @@ public class CommentController {
 
     @Autowired
     private CommentService commentService;
+
+    private final CommonService commonService = new CommonService();
 
     @GetMapping("/getAllCommentByHouseId")
     public ResponseEntity<Object> getAllCommentByHouseId(@RequestParam Long houseId,
@@ -28,11 +35,13 @@ public class CommentController {
     }
 
     @PostMapping("/createComment")
-    public ResponseEntity<Object> createComment(
-            @RequestParam Long idUser, @RequestParam Long isHouse) {
+    public ResponseEntity<Object> createComment(@RequestBody Comment comment, BindingResult errors) {
         try {
-            boolean checkComment = commentService.createComment(idUser, isHouse);
-            return new ResponseEntity<>(checkComment, HttpStatus.CREATED);
+            Map<String, String> validate = commonService.validateInput(errors);
+            if (Objects.nonNull(validate)) {
+                return new ResponseEntity<>(validate, HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(commentService.createComment(comment), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

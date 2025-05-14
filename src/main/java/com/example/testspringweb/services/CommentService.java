@@ -8,7 +8,7 @@ public interface CommentService {
 
     Page<Comment> getAllCommentByHouseId(Long idHouse, Pageable pageable);
 
-    boolean createComment(Long idUser, Long idHouse);
+    Comment createComment(Comment comment);
 
     boolean deleteComment(Long idComment, Long idUser);
 }
