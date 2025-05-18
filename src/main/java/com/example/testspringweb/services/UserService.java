@@ -6,6 +6,8 @@ import com.example.testspringweb.models.User;
 import com.example.testspringweb.models.UserPrinciple;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.util.List;
+
 public interface UserService extends UserDetailsService {
 
     UserDTOResponse register(User user);
@@ -19,5 +21,11 @@ public interface UserService extends UserDetailsService {
     UserDTOResponse getDetailUser(Long userId);
 
     UserPrinciple loadUserByUsername(String username);
+
+    List<UserDTOResponse> getAllUser(Long idAdmin);
+
+    void actionUser(Long idAdmin, String action, Long idUser);
+
+    void checkAdmin(Long idAdmin);
 }
 

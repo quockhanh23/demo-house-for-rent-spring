@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -30,11 +31,7 @@ public class ReportController {
 
     @GetMapping("/getAllRepostByIdHouse")
     public ResponseEntity<Object> getAllRepostByIdHouse(@RequestParam Long idHouse) {
-        try {
-            return new ResponseEntity<>(reportRepository.countAllByIdHouse(idHouse), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(reportRepository.countAllByIdHouse(idHouse), HttpStatus.OK);
     }
 
     @PostMapping("/createReport")

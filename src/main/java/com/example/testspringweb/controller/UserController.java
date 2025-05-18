@@ -2,6 +2,7 @@ package com.example.testspringweb.controller;
 
 import com.example.testspringweb.auth.JWTService;
 import com.example.testspringweb.auth.JwtResponse;
+import com.example.testspringweb.common.CommonConstant;
 import com.example.testspringweb.dto.LoginRequest;
 import com.example.testspringweb.dto.UserDTORequest;
 import com.example.testspringweb.dto.UserDTOResponse;
@@ -52,6 +53,7 @@ public class UserController {
                 roleRepository.findByName("ADMIN") : roleRepository.findByName("USER");
         roles.add(role);
         user.setRoles(roles);
+        user.setStatus(CommonConstant.ACTIVE);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.register(user);
         return new ResponseEntity<>(user, HttpStatus.CREATED);

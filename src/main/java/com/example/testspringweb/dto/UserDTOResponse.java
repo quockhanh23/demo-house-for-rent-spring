@@ -15,4 +15,5 @@ public class UserDTOResponse {
     private String phone;
     private String email;
     private Date createdAt;
+    private String status;
 }
