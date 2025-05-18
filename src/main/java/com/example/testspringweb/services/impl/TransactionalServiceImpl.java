@@ -16,10 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class TransactionalServiceImpl implements TransactionalService {
@@ -60,13 +58,38 @@ public class TransactionalServiceImpl implements TransactionalService {
         transactionalRequest.setStartTime(transactionalRequest.getStartTime());
         transactionalRequest.setEndTime(transactionalRequest.getEndTime());
 
+        validateTransactionalProgress(transactionalRequest);
+
         BigDecimal totalAmount = getTotalAmount(transactionalRequest, TransactionalConstant.CREATE);
         transactionalRequest.setTotalAmountExpected(totalAmount);
 
         return transactionalRepository.save(transactionalRequest);
     }
 
-    void validateDate(Date startDate, Date endDate) {
+    private void validateTransactionalProgress(Transactional transactionalRequest) {
+        if (transactionalRequest.getIdUserGuest().equals(transactionalRequest.getIdUserHost())) {
+            throw new InvalidException("Không thể thuê nhà của chính bạn");
+        }
+        List<Transactional> transactionalList = transactionalRepository.
+                getAllTransactionalByHouseId(transactionalRequest.getIdHouse());
+        Date dateRequest = transactionalRequest.getEndTime();
+        for (Transactional transactional : transactionalList) {
+            if (Objects.isNull(transactional.getStartTime()) || Objects.isNull(transactional.getEndTime())) {
+                throw new InvalidException("Ngày không tồn tại");
+            }
+            Date dateInProgress = transactional.getEndTime();
+            try {
+                validateDate(dateInProgress, dateRequest);
+            } catch (Exception e) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                String startDate = simpleDateFormat.format(transactional.getStartTime());
+                String endDate = simpleDateFormat.format(dateInProgress);
+                throw new InvalidException("Đã có người thuê từ ngày: " + startDate + " đến ngày: " + endDate);
+            }
+        }
+    }
+
+    private void validateDate(Date startDate, Date endDate) {
         long numberDifference = commonService.getDateDifference(startDate, endDate);
         if (numberDifference <= 0) {
             throw new InvalidException("Ngày kết thúc phải lớn hơn ngày bắt đầu");
