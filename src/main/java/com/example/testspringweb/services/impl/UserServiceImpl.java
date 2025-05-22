@@ -11,6 +11,7 @@ import com.example.testspringweb.models.UserPrinciple;
 import com.example.testspringweb.repository.UserRepository;
 import com.example.testspringweb.services.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -111,9 +112,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDTOResponse> getAllUser(Long idAdmin) {
+    public List<UserDTOResponse> getAllUser(Long idAdmin, String searchText) {
         checkAdmin(idAdmin);
-        List<User> users = userRepository.findAll();
+        List<User> users;
+        if (StringUtils.isEmpty(searchText)) {
+            users = userRepository.findAll();
+        } else {
+            users = userRepository.findAllUser(searchText);
+        }
         List<UserDTOResponse> userDTOResponseList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(users)) {
             for (User value : users) {

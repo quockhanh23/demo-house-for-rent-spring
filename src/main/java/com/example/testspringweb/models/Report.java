@@ -25,6 +25,8 @@ public class Report {
     @NotNull
     private Long idUserReport;
     @NotNull
+    private String username;
+    @NotNull
     private Long idHouse;
     @NotNull
     private String content;
