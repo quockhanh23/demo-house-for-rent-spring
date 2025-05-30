@@ -1,5 +1,6 @@
 package com.example.testspringweb.services.impl;
 
+import com.example.testspringweb.common.CommonConstant;
 import com.example.testspringweb.common.HouseConstant;
 import com.example.testspringweb.dto.CountAddress;
 import com.example.testspringweb.exption.InvalidException;
@@ -42,6 +43,12 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public Page<House> getAllHousePageByDistrict(Pageable pageable, String district) {
+        district = district.trim();
+        return houseRepository.getAllHousePageByDistrict(pageable, district);
+    }
+
+    @Override
     public House getDetailHouse(Long idHouse) {
         Optional<House> houseOptional = houseRepository.findById(idHouse);
         if (houseOptional.isEmpty()) {
@@ -75,6 +82,8 @@ public class HouseServiceImpl implements HouseService {
             throw new InvalidException("Invalid user");
         }
         houseRequest.setUsername(userOptional.get().getUsername());
+        houseRequest.setCreatedAt(new Date());
+        houseRequest.setStatus(CommonConstant.ACTIVE);
         return houseRepository.save(houseRequest);
     }
 

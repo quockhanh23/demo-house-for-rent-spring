@@ -23,6 +23,7 @@ public class Comment {
     private String content;
     @NotNull
     private Long idUser;
+    @Column(length = 60)
     private String username;
     @NotNull
     private Long idHouse;

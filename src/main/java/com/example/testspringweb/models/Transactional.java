@@ -25,6 +25,7 @@ public class Transactional {
     private Long idUserHost;
     @NotNull
     private Long idUserGuest;
+    @Column(length = 150)
     private String fullNameUserGuest;
     @Column(length = 20)
     private String status;

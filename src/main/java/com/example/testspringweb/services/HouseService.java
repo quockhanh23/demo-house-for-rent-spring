@@ -11,6 +11,8 @@ public interface HouseService {
 
     Page<House> getAllHousePage(Pageable pageable, String searchText);
 
+    Page<House> getAllHousePageByDistrict(Pageable pageable, String district);
+
     House getDetailHouse(Long idHouse);
 
     List<House> getAllHouseByAddress(String address);

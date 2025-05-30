@@ -1,9 +1,6 @@
 package com.example.testspringweb.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,11 +22,14 @@ public class Report {
     @NotNull
     private Long idUserReport;
     @NotNull
+    @Column(length = 60)
     private String username;
     @NotNull
     private Long idHouse;
     @NotNull
+    @Column(length = 500)
     private String content;
+    @Column(length = 20)
     private String status;
     private Date createdAt;
     private Date updatedAt;

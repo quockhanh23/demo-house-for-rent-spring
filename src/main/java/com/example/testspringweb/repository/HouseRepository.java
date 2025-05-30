@@ -19,6 +19,9 @@ public interface HouseRepository extends JpaRepository<House, Long> {
     @Query(value = "select * from house WHERE name like CONCAT('%', :searchText, '%') or address like CONCAT('%', :searchText, '%') order by created_at desc", nativeQuery = true)
     Page<House> getAllHousePage(Pageable pageable, String searchText);
 
+    @Query(value = "select * from house WHERE district like CONCAT('%', :searchText, '%') order by created_at desc", nativeQuery = true)
+    Page<House> getAllHousePageByDistrict(Pageable pageable, String searchText);
+
     List<House> getAllByAddress(String address);
 
     @Query("SELECT new com.example.testspringweb.dto.CountAddress(h.ward, '', COUNT(h)) FROM House h WHERE h.district = :district GROUP BY h.ward")

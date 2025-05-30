@@ -74,7 +74,6 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
     @GetMapping("/getDetailUser")
     public ResponseEntity<Object> getDetailUser(@RequestParam Long idUser) {
         UserDTOResponse userDTOResponse = userService.getDetailUser(idUser);
