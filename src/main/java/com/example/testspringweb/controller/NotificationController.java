@@ -38,13 +38,15 @@ public class NotificationController {
         }
     }
 
+    @PostMapping("/updateNotification")
+    public ResponseEntity<Object> updateNotification(@RequestParam Long idNotification) {
+        notificationService.updateNotification(idNotification);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping("/updateAllNotification")
     public ResponseEntity<Object> updateAllNotification(@RequestParam Long idUser) {
-        try {
-            notificationService.updateNotification(idUser);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        notificationService.updateAllNotification(idUser);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -2,11 +2,14 @@ package com.example.testspringweb.services.impl;
 
 import com.example.testspringweb.common.ActionNotification;
 import com.example.testspringweb.common.NotificationConstant;
+import com.example.testspringweb.dto.UserDTOResponse;
+import com.example.testspringweb.exption.InvalidException;
 import com.example.testspringweb.models.House;
 import com.example.testspringweb.models.Notification;
 import com.example.testspringweb.repository.NotificationRepository;
 import com.example.testspringweb.services.HouseService;
 import com.example.testspringweb.services.NotificationService;
+import com.example.testspringweb.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -25,6 +28,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired
     private HouseService houseService;
 
+    @Autowired
+    private UserService userService;
+
 
     @Override
     public List<Notification> getAllByIdUserOrderByCreatedAtDesc(Long idUser) {
@@ -37,14 +43,19 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void createNotification(Long idHouse, Long idUserAction, String actionName) {
+        UserDTOResponse userDTOResponse = userService.getDetailUser(idUserAction);
         String content = "";
         switch (actionName) {
-            case ActionNotification.CREATE_COMMENT -> content = "Ai đó đã bình luận căn nhà của bạn";
-            case ActionNotification.CREATE_TRANSACTIONAL -> content = "Ai đó đã đặt thuê căn nhà của bạn";
-            case ActionNotification.CANCEL_TRANSACTIONAL -> content = "Ai đó đã hủy thuê căn nhà của bạn";
-            case ActionNotification.REPORT -> content = "Ai đó đã báo cáo căn nhà của bạn";
-            case ActionNotification.REVIEW -> content = "Ai đó đã đánh giá căn nhà của bạn";
+            case ActionNotification.CREATE_COMMENT ->
+                    content = userDTOResponse.getUsername() + " đã bình luận căn nhà của bạn";
+            case ActionNotification.CREATE_TRANSACTIONAL ->
+                    content = userDTOResponse.getUsername() + " đã đặt thuê căn nhà của bạn";
+            case ActionNotification.CANCEL_TRANSACTIONAL ->
+                    content = userDTOResponse.getUsername() + " đã hủy thuê căn nhà của bạn";
+            case ActionNotification.REPORT -> content = userDTOResponse.getUsername() + " đã báo cáo căn nhà của bạn";
+            case ActionNotification.REVIEW -> content = userDTOResponse.getUsername() + " đã đánh giá căn nhà của bạn";
         }
+
         House house = houseService.getDetailHouse(idHouse);
         Notification notification = new Notification();
         notification.setCreatedAt(new Date());
@@ -52,18 +63,24 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setStatus(NotificationConstant.NOT_SEEN);
         notification.setContent(content);
         notification.setAction(actionName);
+        notification.setIdHouse(idHouse);
         notificationRepository.save(notification);
     }
 
     @Override
-    public boolean updateNotification(Long idNotification) {
+    public void updateNotification(Long idNotification) {
         Optional<Notification> notificationOptional = notificationRepository.findById(idNotification);
         if (notificationOptional.isEmpty()) {
-            return false;
+            throw new InvalidException("Không tìm thấy");
         }
         notificationOptional.get().setUpdatedAt(new Date());
         notificationOptional.get().setStatus(NotificationConstant.SEEN);
         notificationRepository.save(notificationOptional.get());
-        return true;
+    }
+
+    @Override
+    public void updateAllNotification(Long idUser) {
+        userService.getDetailUser(idUser);
+        notificationRepository.updateAllNotificationByIdUser(idUser, NotificationConstant.SEEN);
     }
 }

@@ -27,4 +27,5 @@ public class Notification {
     private String status;
     @Column(length = 50)
     private String action;
+    private Long idHouse;
 }
