@@ -33,6 +33,17 @@ public class HouseForRentWebApplication {
                                  PasswordEncoder passwordEncoder) {
         return args ->
         {
+            if (roleRepository.findByName("ADMIN") == null) {
+                Role role = new Role();
+                role.setName("ADMIN");
+                roleRepository.save(role);
+            }
+            if (roleRepository.findByName("USER") == null) {
+                Role role = new Role();
+                role.setName("USER");
+                roleRepository.save(role);
+            }
+
             User admin = userRepository.findUserByUsername("admin");
             if (Objects.isNull(admin)) {
                 User user = new User();
