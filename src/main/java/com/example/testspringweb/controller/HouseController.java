@@ -39,16 +39,25 @@ public class HouseController {
 
     @GetMapping("/getAllHousePageByDistrict")
     public ResponseEntity<Object> getAllHousePageByDistrict(@RequestParam(defaultValue = "0", required = false) int page,
-                                                  @RequestParam(defaultValue = "10", required = false) int size,
-                                                  @RequestParam(required = false) String searchText) {
+                                                            @RequestParam(defaultValue = "10", required = false) int size,
+                                                            @RequestParam(required = false) String searchText) {
         Pageable pageable = PageRequest.of(page, size);
         Page<House> housePage = houseService.getAllHousePageByDistrict(pageable, searchText);
         return new ResponseEntity<>(housePage, HttpStatus.OK);
     }
 
-    @GetMapping("/getAllHouseByAddress")
-    public ResponseEntity<Object> getAllHouseByAddress(@RequestParam String address) {
-        List<House> house = houseService.getAllHouseByAddress(address);
+    @GetMapping("/getAllHouseOfUser")
+    public ResponseEntity<Object> getAllHouseOfUser(@RequestParam(defaultValue = "0", required = false) int page,
+                                                    @RequestParam(defaultValue = "10", required = false) int size,
+                                                    @RequestParam Long idUser) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<House> housePage = houseService.getAllHouseOfUser(pageable, idUser);
+        return new ResponseEntity<>(housePage, HttpStatus.OK);
+    }
+
+    @GetMapping("/getAllHouseByDistrict")
+    public ResponseEntity<Object> getAllHouseByDistrict(@RequestParam String district) {
+        List<House> house = houseService.getAllHouseByDistrict(district);
         return new ResponseEntity<>(house, HttpStatus.OK);
     }
 

@@ -22,8 +22,6 @@ public class House {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(length = 200)
-    private String name;
     @Column(length = 500)
     private String address;
     @Column(length = 100)

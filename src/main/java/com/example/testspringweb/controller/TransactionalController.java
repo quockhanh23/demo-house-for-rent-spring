@@ -1,5 +1,6 @@
 package com.example.testspringweb.controller;
 
+import com.example.testspringweb.dto.TransactionalHistoryUser;
 import com.example.testspringweb.models.Transactional;
 import com.example.testspringweb.services.CommonService;
 import com.example.testspringweb.services.TransactionalService;
@@ -44,6 +45,17 @@ public class TransactionalController {
         Pageable pageable = PageRequest.of(page, size);
         Page<Transactional> housePage = transactionalService.getAllTransactionalByHouseId(houseId, pageable);
         return new ResponseEntity<>(housePage, HttpStatus.OK);
+    }
+
+    // Lịch sử đặt thuê của người dùng
+    @GetMapping("/getAllTransactionalByUser")
+    public ResponseEntity<Object> getAllTransactionalByUser(
+            @RequestParam Long idUser,
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @RequestParam(defaultValue = "10", required = false) int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<TransactionalHistoryUser> historyUserPage = transactionalService.getAllTransactionalByUser(idUser, pageable);
+        return new ResponseEntity<>(historyUserPage, HttpStatus.OK);
     }
 
     @GetMapping("/getDetailTransactional")

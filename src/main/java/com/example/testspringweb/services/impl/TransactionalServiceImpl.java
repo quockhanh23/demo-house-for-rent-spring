@@ -1,10 +1,12 @@
 package com.example.testspringweb.services.impl;
 
 import com.example.testspringweb.common.TransactionalConstant;
+import com.example.testspringweb.dto.TransactionalHistoryUser;
 import com.example.testspringweb.dto.UserDTOResponse;
 import com.example.testspringweb.exption.InvalidException;
 import com.example.testspringweb.models.House;
 import com.example.testspringweb.models.Transactional;
+import com.example.testspringweb.repository.HouseRepository;
 import com.example.testspringweb.repository.TransactionalRepository;
 import com.example.testspringweb.services.CommonService;
 import com.example.testspringweb.services.HouseService;
@@ -12,12 +14,15 @@ import com.example.testspringweb.services.TransactionalService;
 import com.example.testspringweb.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionalServiceImpl implements TransactionalService {
@@ -30,6 +35,9 @@ public class TransactionalServiceImpl implements TransactionalService {
 
     @Autowired
     private TransactionalRepository transactionalRepository;
+
+    @Autowired
+    private HouseRepository houseRepository;
 
     private final CommonService commonService = new CommonService();
 
@@ -139,14 +147,33 @@ public class TransactionalServiceImpl implements TransactionalService {
     }
 
     @Override
+    public Page<TransactionalHistoryUser> getAllTransactionalByUser(Long idUser, Pageable pageable) {
+        List<Transactional> transactionalList = transactionalRepository.getAllTransactionalByUser(idUser);
+        List<Long> idHouseList = transactionalList.stream().map(Transactional::getIdHouse).distinct().toList();
+        List<TransactionalHistoryUser> transactionalHistoryUsers = new ArrayList<>();
+        List<House> houseList = houseRepository.getAllByIdIn(idHouseList);
+
+        if (CollectionUtils.isEmpty(houseList)) return new PageImpl<>(List.of());
+        for (House house : houseList) {
+            Long idHouse = house.getId();
+            TransactionalHistoryUser transactionalHistoryUser = new TransactionalHistoryUser();
+            transactionalHistoryUser.setHouse(house);
+            transactionalHistoryUser.setTransactionalList(transactionalList.stream()
+                    .filter(item -> item.getIdHouse().equals(idHouse)).collect(Collectors.toList()));
+            transactionalHistoryUsers.add(transactionalHistoryUser);
+        }
+        return new PageImpl<>(transactionalHistoryUsers, pageable, transactionalHistoryUsers.size());
+    }
+
+    @Override
     public BigDecimal totalMonthly(Long userId, String month) {
         boolean isMonthOfYear = checkMonthDate(month);
         if (!isMonthOfYear) return BigDecimal.ZERO;
         List<Transactional> getTotalMonthlyByUserId = transactionalRepository
                 .getTotalMonthlyByUserId(month, userId, TransactionalConstant.COMPLETED);
         BigDecimal total = BigDecimal.ZERO;
-        for (int i = 0; i < getTotalMonthlyByUserId.size(); i++) {
-            total = total.add(getTotalMonthlyByUserId.get(i).getTotalAmountActual());
+        for (Transactional transactional : getTotalMonthlyByUserId) {
+            total = total.add(transactional.getTotalAmountActual());
         }
         return total;
     }
@@ -156,13 +183,16 @@ public class TransactionalServiceImpl implements TransactionalService {
         UserDTOResponse userLogin = userService.getDetailUser(userId);
         Transactional transactional = getDetailTransactional(transactionalId);
         if (!transactional.getIdUserGuest().equals(userLogin.getId())) {
-            throw new InvalidException("bạn không phải người thuê căn nhà này");
+            throw new InvalidException("Bạn không phải người thuê căn nhà này");
+        }
+        if (TransactionalConstant.CANCELED.equals(transactional.getStatus())) {
+            throw new InvalidException("Bạn đã hủy thuê căn nhà này rồi");
         }
         Date endTime = transactional.getEndTime();
         Date date = new Date();
         long dateDifference = commonService.getDateDifference(endTime, date);
         if (dateDifference > 1) {
-            return false;
+            throw new InvalidException("Bạn chỉ được phép hủy đơn trong ngày đầu tiên đăng kí");
         }
         try {
             transactional.setStatus(TransactionalConstant.CANCELED);
@@ -190,7 +220,6 @@ public class TransactionalServiceImpl implements TransactionalService {
         Date startTime = transactional.getStartTime();
         long dateDifference = commonService.getDateDifference(startTime, checkoutTime);
         BigDecimal dateDifferenceBigDecimal = BigDecimal.valueOf(dateDifference + 1);
-        BigDecimal amountPayable = price.multiply(dateDifferenceBigDecimal);
-        return amountPayable;
+        return price.multiply(dateDifferenceBigDecimal);
     }
 }

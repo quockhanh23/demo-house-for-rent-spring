@@ -6,6 +6,7 @@ import com.example.testspringweb.common.CommonConstant;
 import com.example.testspringweb.dto.LoginRequest;
 import com.example.testspringweb.dto.UserDTORequest;
 import com.example.testspringweb.dto.UserDTOResponse;
+import com.example.testspringweb.exption.InvalidException;
 import com.example.testspringweb.models.Role;
 import com.example.testspringweb.models.User;
 import com.example.testspringweb.models.UserPrinciple;
@@ -47,20 +48,20 @@ public class UserController {
     private JWTService jwtService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> createUser(@RequestBody User user) {
+    public ResponseEntity<Object> createUser(@RequestBody User user) {
         Set<Role> roles = new HashSet<>();
         Role role = (user.getRoles() != null) ?
-                roleRepository.findByName("ADMIN") : roleRepository.findByName("USER");
+                roleRepository.findByName(CommonConstant.ROLE_ADMIN)
+                : roleRepository.findByName(CommonConstant.ROLE_USER);
         roles.add(role);
         user.setRoles(roles);
         user.setStatus(CommonConstant.ACTIVE);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userService.register(user);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.register(user), HttpStatus.CREATED);
     }
 
     @PutMapping("/updateUser")
-    public ResponseEntity<Object> updateInformation(@RequestBody UserDTORequest dtoRequest) {
+    public ResponseEntity<Object> updateUser(@RequestBody UserDTORequest dtoRequest) {
         UserDTOResponse userDTOResponse = userService.updateUser(dtoRequest);
         return new ResponseEntity<>(userDTOResponse, HttpStatus.OK);
     }
@@ -94,17 +95,16 @@ public class UserController {
             Authentication authentication = authenticationManager.authenticate
                     (new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            UserPrinciple userPrinciple = userService.loadUserByUsername(loginRequest.getUsername());
-            String jwt = jwtService.generateToken(userPrinciple);
-            JwtResponse jwtResponse = new JwtResponse();
-            jwtResponse.setId(userPrinciple.getId());
-            jwtResponse.setToken(jwt);
-            jwtResponse.setRoles(userPrinciple.getAuthorities());
-            jwtResponse.setUsername(userPrinciple.getUsername());
-            return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
         } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InvalidException("Tài khoản hoặc mật khẩu không đúng");
         }
+        UserPrinciple userPrinciple = userService.loadUserByUsername(loginRequest.getUsername());
+        String jwt = jwtService.generateToken(userPrinciple);
+        JwtResponse jwtResponse = new JwtResponse();
+        jwtResponse.setId(userPrinciple.getId());
+        jwtResponse.setToken(jwt);
+        jwtResponse.setRoles(userPrinciple.getAuthorities());
+        jwtResponse.setUsername(userPrinciple.getUsername());
+        return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
     }
 }

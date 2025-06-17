@@ -14,8 +14,8 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
-    @GetMapping("/getAll")
-    public ResponseEntity<Object> getAll(@RequestParam Long houseId) {
+    @GetMapping("/getAllReviewByIdHouse")
+    public ResponseEntity<Object> getAllReviewByIdHouse(@RequestParam Long houseId) {
         try {
             return new ResponseEntity<>(reviewService.getAllReviewByHouseId(houseId), HttpStatus.OK);
         } catch (Exception e) {

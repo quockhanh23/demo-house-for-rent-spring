@@ -11,10 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @SpringBootApplication
 public class HouseForRentWebApplication {
@@ -33,14 +30,14 @@ public class HouseForRentWebApplication {
                                  PasswordEncoder passwordEncoder) {
         return args ->
         {
-            if (roleRepository.findByName("ADMIN") == null) {
+            if (roleRepository.findByName(CommonConstant.ROLE_ADMIN) == null) {
                 Role role = new Role();
-                role.setName("ADMIN");
+                role.setName(CommonConstant.ROLE_ADMIN);
                 roleRepository.save(role);
             }
-            if (roleRepository.findByName("USER") == null) {
+            if (roleRepository.findByName(CommonConstant.ROLE_USER) == null) {
                 Role role = new Role();
-                role.setName("USER");
+                role.setName(CommonConstant.ROLE_USER);
                 roleRepository.save(role);
             }
 
@@ -48,7 +45,7 @@ public class HouseForRentWebApplication {
             if (Objects.isNull(admin)) {
                 User user = new User();
                 Set<Role> roles = new HashSet<>();
-                Role role = roleRepository.findByName("ADMIN");
+                Role role = roleRepository.findByName(CommonConstant.ROLE_ADMIN);
                 roles.add(role);
                 user.setRoles(roles);
                 user.setUsername("admin");
@@ -58,6 +55,7 @@ public class HouseForRentWebApplication {
                 user.setCreatedAt(new Date());
                 user.setUpdatedAt(new Date());
                 user.setStatus(CommonConstant.ACTIVE);
+                user.setUuid(UUID.randomUUID().toString());
                 userRepository.save(user);
             }
         };

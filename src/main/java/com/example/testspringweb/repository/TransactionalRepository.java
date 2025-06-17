@@ -19,6 +19,9 @@ public interface TransactionalRepository extends JpaRepository<Transactional, Lo
     @Query(value = "select * from transactional where id_house = :houseId", nativeQuery = true)
     Page<Transactional> getAllTransactionalByHouseId(Long houseId, Pageable pageable);
 
+    @Query(value = "select * from transactional where id_user_guest = :idUser", nativeQuery = true)
+    List<Transactional> getAllTransactionalByUser(Long idUser);
+
     @Query(value = "select * from transactional where (id_house = :houseId) and (status = 'PROCESSING' or status = 'CONFIRM')", nativeQuery = true)
     List<Transactional> getAllTransactionalByHouseId(Long houseId);
 

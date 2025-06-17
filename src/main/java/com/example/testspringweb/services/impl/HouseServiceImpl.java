@@ -49,6 +49,11 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public Page<House> getAllHouseOfUser(Pageable pageable, Long idUser) {
+        return houseRepository.getAllHouseOfUser(pageable, idUser);
+    }
+
+    @Override
     public House getDetailHouse(Long idHouse) {
         Optional<House> houseOptional = houseRepository.findById(idHouse);
         if (houseOptional.isEmpty()) {
@@ -58,8 +63,8 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public List<House> getAllHouseByAddress(String address) {
-        List<House> houseList = houseRepository.getAllByAddress(address);
+    public List<House> getAllHouseByDistrict(String district) {
+        List<House> houseList = houseRepository.getAllByDistrict(district);
         if (CollectionUtils.isEmpty(houseList)) {
             houseList = new ArrayList<>();
         }

@@ -19,23 +19,15 @@ public class NotificationController {
 
     @GetMapping("/getAllNotificationByIdUser")
     public ResponseEntity<Object> getAllNotificationByIdUser(@RequestParam Long idUser) {
-        try {
             List<Notification> notificationList = notificationService.getAllByIdUserOrderByCreatedAtDesc(idUser);
             return new ResponseEntity<>(notificationList, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @PostMapping("/createNotification")
     public ResponseEntity<Object> createNotification(
             @RequestParam Long idHouse, @RequestParam Long idUserAction, @RequestParam String actionName) {
-        try {
             notificationService.createNotification(idHouse, idUserAction, actionName);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @PostMapping("/updateNotification")

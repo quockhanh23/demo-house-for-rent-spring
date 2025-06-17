@@ -13,9 +13,11 @@ public interface HouseService {
 
     Page<House> getAllHousePageByDistrict(Pageable pageable, String district);
 
+    Page<House> getAllHouseOfUser(Pageable pageable, Long idUser);
+
     House getDetailHouse(Long idHouse);
 
-    List<House> getAllHouseByAddress(String address);
+    List<House> getAllHouseByDistrict(String address);
 
     House createHouse(House house);
 
