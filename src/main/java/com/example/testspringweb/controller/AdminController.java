@@ -4,8 +4,8 @@ import com.example.testspringweb.dto.UserDTOResponse;
 import com.example.testspringweb.models.Report;
 import com.example.testspringweb.repository.ReportRepository;
 import com.example.testspringweb.services.UserService;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
@@ -17,13 +17,11 @@ import java.util.List;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/admins")
+@RequiredArgsConstructor
 public class AdminController {
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private ReportRepository reportRepository;
+    private final UserService userService;
+    private final ReportRepository reportRepository;
 
     @GetMapping("/getAllUser")
     public ResponseEntity<Object> getAllUser(@RequestParam Long idAdmin, @RequestParam String searchText) {

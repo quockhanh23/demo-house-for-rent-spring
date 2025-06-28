@@ -13,10 +13,10 @@ import java.util.List;
 @Repository
 public interface TransactionalRepository extends JpaRepository<Transactional, Long> {
 
-    @Query(value = "select * from transactional", nativeQuery = true)
+    @Query(value = "select * from transactional order by created_at desc", nativeQuery = true)
     Page<Transactional> getAllTransactionalPage(Pageable pageable);
 
-    @Query(value = "select * from transactional where id_house = :houseId", nativeQuery = true)
+    @Query(value = "select * from transactional where id_house = :houseId order by created_at desc", nativeQuery = true)
     Page<Transactional> getAllTransactionalByHouseId(Long houseId, Pageable pageable);
 
     @Query(value = "select * from transactional where id_user_guest = :idUser", nativeQuery = true)

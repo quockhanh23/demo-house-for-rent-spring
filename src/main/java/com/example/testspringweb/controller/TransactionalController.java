@@ -84,7 +84,7 @@ public class TransactionalController {
         return new ResponseEntity<>(transactionalService.createTransactional(transactional), HttpStatus.CREATED);
     }
 
-    // Hủy thuê nhà trước 1 ngày
+    // Hủy thuê nhà
     @PostMapping("/cancelRental")
     public ResponseEntity<Object> cancelRental(@RequestParam Long transactionalId, @RequestParam Long userId) {
         return new ResponseEntity<>(transactionalService.cancelRental(transactionalId, userId), HttpStatus.OK);

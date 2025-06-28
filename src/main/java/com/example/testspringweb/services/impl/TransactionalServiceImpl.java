@@ -1,5 +1,6 @@
 package com.example.testspringweb.services.impl;
 
+import com.example.testspringweb.common.CommonUtils;
 import com.example.testspringweb.common.TransactionalConstant;
 import com.example.testspringweb.dto.TransactionalHistoryUser;
 import com.example.testspringweb.dto.UserDTOResponse;
@@ -80,20 +81,24 @@ public class TransactionalServiceImpl implements TransactionalService {
         }
         List<Transactional> transactionalList = transactionalRepository.
                 getAllTransactionalByHouseId(transactionalRequest.getIdHouse());
-        Date dateRequest = transactionalRequest.getEndTime();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String startDateRequest = simpleDateFormat.format(transactionalRequest.getStartTime());
+        String endDateRequest = simpleDateFormat.format(transactionalRequest.getEndTime());
+        List<String> listDateRangeLarge = CommonUtils.checkDateRange(startDateRequest, endDateRequest);
         for (Transactional transactional : transactionalList) {
-            if (Objects.isNull(transactional.getStartTime()) || Objects.isNull(transactional.getEndTime())) {
-                throw new InvalidException("Ngày không tồn tại");
-            }
-            Date dateInProgress = transactional.getEndTime();
-            try {
-                validateDate(dateInProgress, dateRequest);
-            } catch (Exception e) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                String startDate = simpleDateFormat.format(transactional.getStartTime());
-                String endDate = simpleDateFormat.format(dateInProgress);
+            if (Objects.isNull(transactional.getStartTime())) continue;
+            if (Objects.isNull(transactional.getEndTime())) continue;
+            String startDate = simpleDateFormat.format(transactional.getStartTime());
+            String endDate = simpleDateFormat.format(transactional.getEndTime());
+
+            if (listDateRangeLarge.contains(startDate) || listDateRangeLarge.contains(endDateRequest)) {
                 throw new InvalidException("Đã có người thuê từ ngày: " + startDate + " đến ngày: " + endDate);
             }
+            List<String> listDateRange = CommonUtils.checkDateRange(startDate, endDate);
+            if (listDateRange.contains(startDateRequest) || listDateRange.contains(endDateRequest)) {
+                throw new InvalidException("Đã có người thuê từ ngày: " + startDate + " đến ngày: " + endDate);
+            }
+
         }
     }
 
@@ -116,6 +121,7 @@ public class TransactionalServiceImpl implements TransactionalService {
             Transactional transactional = getDetailTransactional(transactionalId);
             transactional.setStatus(TransactionalConstant.COMPLETED);
             transactional.setUpdatedAt(new Date());
+            transactional.setCheckOutTime(new Date());
             BigDecimal totalAmount = getTotalAmount(transactional, TransactionalConstant.UPDATE);
             transactional.setTotalAmountActual(totalAmount);
             return transactionalRepository.save(transactional);
@@ -130,9 +136,10 @@ public class TransactionalServiceImpl implements TransactionalService {
         if (transactional.getIdUserGuest().equals(user.getId())) {
             transactional.setUpdatedAt(new Date());
             transactional.setCheckInTime(new Date());
+            transactional.setStatus(TransactionalConstant.RENTED);
             return transactionalRepository.save(transactional);
         } else {
-            throw new InvalidException("bạn không phải người thuê căn nhà này");
+            throw new InvalidException("Bạn không phải người thuê căn nhà này");
         }
     }
 
@@ -162,7 +169,14 @@ public class TransactionalServiceImpl implements TransactionalService {
                     .filter(item -> item.getIdHouse().equals(idHouse)).collect(Collectors.toList()));
             transactionalHistoryUsers.add(transactionalHistoryUser);
         }
-        return new PageImpl<>(transactionalHistoryUsers, pageable, transactionalHistoryUsers.size());
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), transactionalHistoryUsers.size());
+        List<TransactionalHistoryUser> pagedList = new ArrayList<>();
+        if (start < transactionalHistoryUsers.size()) {
+            pagedList = transactionalHistoryUsers.subList(start, end);
+        }
+        return new PageImpl<>(pagedList, pageable, transactionalHistoryUsers.size());
     }
 
     @Override
@@ -212,7 +226,7 @@ public class TransactionalServiceImpl implements TransactionalService {
         House house = houseService.getDetailHouse(transactional.getIdHouse());
         BigDecimal price = house.getPrice();
         Date checkoutTime;
-        if ("create".equals(type)) {
+        if (TransactionalConstant.CREATE.equals(type)) {
             checkoutTime = transactional.getEndTime();
         } else {
             checkoutTime = transactional.getCheckOutTime();
