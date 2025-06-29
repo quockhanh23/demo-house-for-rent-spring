@@ -12,5 +12,5 @@ public interface NotificationService {
 
     void updateNotification(Long idNotification);
 
-    void updateAllNotification (Long idUser);
+    void updateAllNotification (Long idUser, String status);
 }

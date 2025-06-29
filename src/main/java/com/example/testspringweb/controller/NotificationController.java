@@ -37,8 +37,8 @@ public class NotificationController {
     }
 
     @PostMapping("/updateAllNotification")
-    public ResponseEntity<Object> updateAllNotification(@RequestParam Long idUser) {
-        notificationService.updateAllNotification(idUser);
+    public ResponseEntity<Object> updateAllNotification(@RequestParam Long idUser, @RequestParam String status) {
+        notificationService.updateAllNotification(idUser, status);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

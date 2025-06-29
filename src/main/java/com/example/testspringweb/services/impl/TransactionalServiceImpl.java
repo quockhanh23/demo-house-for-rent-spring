@@ -91,7 +91,7 @@ public class TransactionalServiceImpl implements TransactionalService {
             String startDate = simpleDateFormat.format(transactional.getStartTime());
             String endDate = simpleDateFormat.format(transactional.getEndTime());
 
-            if (listDateRangeLarge.contains(startDate) || listDateRangeLarge.contains(endDateRequest)) {
+            if (listDateRangeLarge.contains(startDate) || listDateRangeLarge.contains(endDate)) {
                 throw new InvalidException("Đã có người thuê từ ngày: " + startDate + " đến ngày: " + endDate);
             }
             List<String> listDateRange = CommonUtils.checkDateRange(startDate, endDate);

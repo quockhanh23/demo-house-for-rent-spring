@@ -13,6 +13,7 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
+    @Query(value = "select * from notification where id_user = :idUser and status != 'D' order by created_at desc ", nativeQuery = true)
     List<Notification> getAllByIdUserOrderByCreatedAtDesc(Long idUser);
 
     @Modifying

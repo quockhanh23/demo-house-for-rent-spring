@@ -79,8 +79,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void updateAllNotification(Long idUser) {
+    public void updateAllNotification(Long idUser, String status) {
         userService.getDetailUser(idUser);
-        notificationRepository.updateAllNotificationByIdUser(idUser, NotificationConstant.SEEN);
+        notificationRepository.updateAllNotificationByIdUser(idUser, status);
     }
 }

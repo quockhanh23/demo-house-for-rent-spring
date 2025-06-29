@@ -7,6 +7,7 @@ public class NotificationConstant {
 
     public static final String SEEN = "Y";
     public static final String NOT_SEEN = "N";
+    public static final String DELETE = "D";
     public static final String CANCEL_RENTAL = "đã hủy nhà";
     public static final String NEW_TENANT = "đã thuê nhà";
     public static final String NEW_COMMENT = "đã bình luận nhà";

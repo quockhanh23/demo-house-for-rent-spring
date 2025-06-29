@@ -80,7 +80,7 @@ public class HouseServiceImpl implements HouseService {
         Long idUser = houseRequest.getIdUser();
         Optional<Category> categoryOptional = categoryRepository.findById(idCategory);
         if (categoryOptional.isEmpty()) {
-            throw new InvalidException("Invalid category");
+            throw new InvalidException("Invalid category.sql");
         }
         Optional<User> userOptional = userRepository.findById(idUser);
         if (userOptional.isEmpty()) {
@@ -95,6 +95,7 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public House updateHouse(House house, Long idHouse) {
         getDetailHouse(idHouse);
+        house.setUpdatedAt(new Date());
         return houseRepository.save(house);
     }
 

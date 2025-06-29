@@ -26,7 +26,7 @@ public class UploadImageController {
     @PostMapping("/uploadImageToImgbb")
     public ResponseEntity<Object> uploadImageToImgbb(@RequestParam("file") MultipartFile image) throws IOException {
         String API_KEY = "60240f7e1353fc707e7b77994b1bcd81";
-        String url = "https://api.imgbb.com/1/upload?expiration=60000&key=" + API_KEY;
+        String url = "https://api.imgbb.com/1/upload?expiration=31536000&key=" + API_KEY;
 
         // ✅ 1. Ghi MultipartFile ra file tạm
         File tempFile = File.createTempFile("upload-", image.getOriginalFilename());
