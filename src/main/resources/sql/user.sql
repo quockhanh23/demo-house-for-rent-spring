@@ -1,0 +1,16 @@
+INSERT INTO thue_nha.user (id, avatar, confirm_password, created_at, email, full_name, password, phone, status, updated_at, username, uuid) VALUES (1, null, '$2a$10$2i4YN4L5wpoUsQxHVNZ/9.Crgn8i5E3WYkH233E3Vyt9TloeqV6bG', '2025-06-01 20:34:23.677000', 'admin@gmail.com', 'admin', '$2a$10$.CDlspoNpIkKEkIdyMpTv.LHWfY7QWpjaQeHFow4Vxffp8eOi3fcW', '0943434341', 'ACTIVE', '2025-06-30 20:32:38', 'admin', null);
+INSERT INTO thue_nha.user (id, avatar, confirm_password, created_at, email, full_name, password, phone, status, updated_at, username, uuid) VALUES (2, null, '123456', '2025-06-16 20:27:33.158000', 'khanh@gmail.com', 'Nguyễn Khánh', '$2a$10$vbByroypp.LcYLnVwbB/vuo7Otx7mMJHJ0RdEuLvzQKtGutnq4GdG', '0343434341', 'ACTIVE', '2025-06-30 20:32:38', 'khanh', '075ae750-1bc5-488e-851a-9b9236742f20');
+INSERT INTO thue_nha.user (id, avatar, confirm_password, created_at, email, full_name, password, phone, status, updated_at, username, uuid) VALUES (3, null, '123456', '2025-06-16 20:30:55.597000', 'long@gmail.com', 'Nguyễn Văn Long', '$2a$10$6NbdTrbrDLUXKKHX5levg.WBHqIy1eIchxTRq9DAdJv.dA8HSl1xe', '534534534', 'ACTIVE', '2025-06-30 20:32:38', 'long', 'eaaf889f-c646-4e9e-861a-8093ca020d80');
+INSERT INTO thue_nha.user (id, avatar, confirm_password, created_at, email, full_name, password, phone, status, updated_at, username, uuid) VALUES (4, null, '123456', '2025-06-30 19:17:00.135000', 'quang@gmail.com', 'Nguyễn Văn Quang', '$2a$10$umcJkrHhJY5MsdntvsniDO9G/9lTi/J1xlAYP3vXMN8IXk4VXhfhq', '0353411218', 'ACTIVE', '2025-06-30 20:32:38', 'quang', '671b720a-a018-43c1-ae84-36fcd00b5964');
+INSERT INTO thue_nha.user (id, avatar, confirm_password, created_at, email, full_name, password, phone, status, updated_at, username, uuid) VALUES (5, null, '123456', '2025-06-30 19:19:59.966000', 'minh@gmail.com', 'Nguyễn Thị Minh', '$2a$10$NW27CqfXRKEvwv.2cOsjF.opOxIkz3cqJY6d4A7HAriX.LgN5lp3m', '0353513319', 'ACTIVE', '2025-06-30 20:32:38', 'minh', '054f51c4-e7e6-4a5a-9641-6f05f54c1304');
+INSERT INTO thue_nha.user (id, avatar, confirm_password, created_at, email, full_name, password, phone, status, updated_at, username, uuid) VALUES (6, null, '123456', '2025-06-30 19:20:43.094000', 'linh@gmail.com', 'Nguyễn Văn Linh', '$2a$10$442RhdD/r2eQL2QjC3fCZO.xavIJfayq8UWssxuvqxzVHMX4u/JxO', '0355413210', 'ACTIVE', '2025-06-30 20:32:38', 'linh', '273b018f-1418-42e2-8d29-010960784ce3');
+INSERT INTO thue_nha.user (id, avatar, confirm_password, created_at, email, full_name, password, phone, status, updated_at, username, uuid) VALUES (7, null, '123456', '2025-06-30 19:25:44.834000', 'hoang@gmail.com', 'Nguyễn Văn Hoàng', '$2a$10$nCKABCK5PmWqNuciGvShf.co4jz61eXcHZ4wH78AA.Lxnjyb1e8sK', '0973554352', 'ACTIVE', '2025-06-30 20:32:38', 'hoang', '66bb0d7d-fcaf-4326-8e4a-01d80f2efa5c');
+
+
+INSERT INTO thue_nha.user_role (user_id, role_id) VALUES (1, 1);
+INSERT INTO thue_nha.user_role (user_id, role_id) VALUES (2, 2);
+INSERT INTO thue_nha.user_role (user_id, role_id) VALUES (3, 2);
+INSERT INTO thue_nha.user_role (user_id, role_id) VALUES (4, 2);
+INSERT INTO thue_nha.user_role (user_id, role_id) VALUES (5, 2);
+INSERT INTO thue_nha.user_role (user_id, role_id) VALUES (6, 2);
+INSERT INTO thue_nha.user_role (user_id, role_id) VALUES (7, 2);
