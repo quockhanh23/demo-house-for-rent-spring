@@ -75,7 +75,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void validateChangePassword(UserDTORequest userDTORequest) {
-
+        if (StringUtils.isEmpty(userDTORequest.getPassword())) {
+            throw new InvalidException("Bạn chưa điền mật khẩu cũ");
+        }
+        if (StringUtils.isEmpty(userDTORequest.getNewPassword())) {
+            throw new InvalidException("Bạn chưa điền mật khẩu mới");
+        }
+        if (StringUtils.isEmpty(userDTORequest.getConfirmNewPassword())) {
+            throw new InvalidException("Bạn chưa điền xác nhận mật khẩu mới");
+        }
     }
 
     @Override
