@@ -13,10 +13,10 @@ import java.util.List;
 @Repository
 public interface HouseRepository extends JpaRepository<House, Long> {
 
-    @Query(value = "select * from house order by created_at desc", nativeQuery = true)
+    @Query(value = "select * from house", nativeQuery = true)
     Page<House> getAllHousePage(Pageable pageable);
 
-    @Query(value = "select * from house WHERE province like CONCAT('%', :searchText, '%') or district like CONCAT('%', :searchText, '%') or address like CONCAT('%', :searchText, '%') order by created_at desc", nativeQuery = true)
+    @Query(value = "select * from house WHERE province like CONCAT('%', :searchText, '%') or district like CONCAT('%', :searchText, '%') or address like CONCAT('%', :searchText, '%') or price like CONCAT('%', :searchText, '%')", nativeQuery = true)
     Page<House> getAllHousePage(Pageable pageable, String searchText);
 
     @Query(value = "select * from house WHERE district like CONCAT('%', :searchText, '%') order by created_at desc", nativeQuery = true)

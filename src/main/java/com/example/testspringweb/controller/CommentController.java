@@ -3,7 +3,7 @@ package com.example.testspringweb.controller;
 import com.example.testspringweb.models.Comment;
 import com.example.testspringweb.services.CommentService;
 import com.example.testspringweb.services.CommonService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +18,10 @@ import java.util.Objects;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/comments")
+@RequiredArgsConstructor
 public class CommentController {
 
-    @Autowired
-    private CommentService commentService;
+    private final CommentService commentService;
 
     private final CommonService commonService = new CommonService();
 
@@ -36,24 +36,16 @@ public class CommentController {
 
     @PostMapping("/createComment")
     public ResponseEntity<Object> createComment(@RequestBody Comment comment, BindingResult errors) {
-        try {
-            Map<String, String> validate = commonService.validateInput(errors);
-            if (Objects.nonNull(validate)) {
-                return new ResponseEntity<>(validate, HttpStatus.BAD_REQUEST);
-            }
-            return new ResponseEntity<>(commentService.createComment(comment), HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        Map<String, String> validate = commonService.validateInput(errors);
+        if (Objects.nonNull(validate)) {
+            return new ResponseEntity<>(validate, HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(commentService.createComment(comment), HttpStatus.CREATED);
     }
 
     @PostMapping("/updateComment")
     public ResponseEntity<Object> updateComment(@RequestParam Long idComment, @RequestParam Long idUser) {
-        try {
-            boolean checkComment = commentService.deleteComment(idComment, idUser);
-            return new ResponseEntity<>(checkComment, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        boolean checkComment = commentService.deleteComment(idComment, idUser);
+        return new ResponseEntity<>(checkComment, HttpStatus.OK);
     }
 }

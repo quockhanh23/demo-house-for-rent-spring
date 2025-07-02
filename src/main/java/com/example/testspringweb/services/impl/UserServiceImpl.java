@@ -105,6 +105,7 @@ public class UserServiceImpl implements UserService {
             userPrinciple.setId(user.getId());
             userPrinciple.setUsername(user.getUsername());
             userPrinciple.setPassword(user.getPassword());
+            userPrinciple.setStatus(user.getStatus());
 
             Set<Role> roleSet = user.getRoles();
             List<SimpleGrantedAuthority> simpleGrantedAuthorityList = new ArrayList<>();
@@ -117,6 +118,12 @@ public class UserServiceImpl implements UserService {
             return userPrinciple;
         }
         return null;
+    }
+
+    public void checkUserInActive(UserPrinciple userPrinciple) {
+        if (userPrinciple.getStatus().equals(CommonConstant.INACTIVE)) {
+            throw new InvalidException("Tài khoản của bạn hiện đã bị khóa vui lòng liên hệ admin@gmail.com");
+        }
     }
 
     @Override

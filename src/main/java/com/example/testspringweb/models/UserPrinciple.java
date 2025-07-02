@@ -16,6 +16,7 @@ public class UserPrinciple implements UserDetails {
     private Long id;
     private String username;
     private String password;
+    private String status;
     private Collection<? extends GrantedAuthority> roles;
 
     @Override

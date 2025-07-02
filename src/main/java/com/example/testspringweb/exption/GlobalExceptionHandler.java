@@ -20,11 +20,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleException(Exception invalidException, WebRequest webRequest) {
+    public ResponseEntity<Object> handleException(Exception exception, WebRequest webRequest) {
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        errorMessage.setMessage(invalidException.getMessage());
-        invalidException.printStackTrace();
+        errorMessage.setMessage(exception.getMessage());
+        exception.printStackTrace();
         errorMessage.setDescription(webRequest.getDescription(false));
         return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }

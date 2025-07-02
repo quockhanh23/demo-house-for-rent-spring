@@ -21,7 +21,7 @@ public class AddressController {
     private final RestTemplate restTemplate;
 
     @GetMapping("/getAllProvince")
-    public ResponseEntity<?> getAllProvince() throws JsonProcessingException {
+    public ResponseEntity<Object> getAllProvince() throws JsonProcessingException {
         String url = AddressConstants.ADDRESS_DOMAIN + "/provinces?page=0&size=1000";
         String jsonResponse = getJsonResponse(url);
         LocationDTO responseData = CommonUtils.intObjectMapper().readValue(jsonResponse, LocationDTO.class);
@@ -29,7 +29,7 @@ public class AddressController {
     }
 
     @GetMapping("/getAllDistrict")
-    public ResponseEntity<?> getAllDistrict(@RequestParam String idProvince,
+    public ResponseEntity<Object> getAllDistrict(@RequestParam String idProvince,
                                             @RequestParam(required = false) String query) throws JsonProcessingException {
         query = StringUtils.isNotEmpty(query) ? "&query=" + query : "";
         String url = AddressConstants.ADDRESS_DOMAIN + "/districts/" + idProvince + "?page=0&size=1000" + query;
@@ -39,7 +39,7 @@ public class AddressController {
     }
 
     @GetMapping("/getAllWard")
-    public ResponseEntity<?> getAllWard(@RequestParam String districtId,
+    public ResponseEntity<Object> getAllWard(@RequestParam String districtId,
                                         @RequestParam(required = false) String query) throws JsonProcessingException {
         query = StringUtils.isNotEmpty(query) ? "&query=" + query : "";
         String url = AddressConstants.ADDRESS_DOMAIN + "/wards/" + districtId + "?page=0&size=1000" + query;

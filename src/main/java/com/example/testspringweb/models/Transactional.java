@@ -39,4 +39,6 @@ public class Transactional {
     private Date checkOutTime;
     private BigDecimal totalAmountExpected;
     private BigDecimal totalAmountActual;
+    private int totalDay;
+    private String cancelReason;
 }

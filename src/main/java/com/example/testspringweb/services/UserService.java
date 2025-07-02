@@ -22,6 +22,8 @@ public interface UserService extends UserDetailsService {
 
     UserPrinciple loadUserByUsername(String username);
 
+    void checkUserInActive(UserPrinciple userPrinciple);
+
     List<UserDTOResponse> getAllUser(Long idAdmin, String searchText);
 
     void actionUser(Long idAdmin, String action, Long idUser);

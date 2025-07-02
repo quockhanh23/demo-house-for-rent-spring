@@ -4,10 +4,11 @@ import com.example.testspringweb.dto.CountAddress;
 import com.example.testspringweb.models.House;
 import com.example.testspringweb.services.CommonService;
 import com.example.testspringweb.services.HouseService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -21,18 +22,23 @@ import java.util.Objects;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/houses")
+@RequiredArgsConstructor
 public class HouseController {
 
-    @Autowired
-    private HouseService houseService;
+    private final HouseService houseService;
 
     private final CommonService commonService = new CommonService();
 
     @GetMapping("/getAllPage")
     public ResponseEntity<Object> getAllHousePage(@RequestParam(defaultValue = "0", required = false) int page,
                                                   @RequestParam(defaultValue = "10", required = false) int size,
+                                                  @RequestParam(defaultValue = "id", required = false) String sortBy,
+                                                  @RequestParam(defaultValue = "desc", required = false) String direction,
                                                   @RequestParam(required = false) String searchText) {
-        Pageable pageable = PageRequest.of(page, size);
+        if (sortBy.equals("")) sortBy = "id";
+        if (direction.equals("")) sortBy = "desc";
+        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
         Page<House> housePage = houseService.getAllHousePage(pageable, searchText);
         return new ResponseEntity<>(housePage, HttpStatus.OK);
     }

@@ -42,7 +42,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void createNotification(Long idHouse, Long idUserAction, String actionName) {
+    public void createNotification(Long idHouse, Long idUserAction, String actionName, Long idUserSendTo) {
         UserDTOResponse userDTOResponse = userService.getDetailUser(idUserAction);
         String content = "";
         switch (actionName) {
@@ -64,6 +64,10 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setContent(content);
         notification.setAction(actionName);
         notification.setIdHouse(idHouse);
+        if (idUserSendTo != 0 && ActionNotification.CANCEL_TRANSACTIONAL.equals(actionName)) {
+            notification.setContent("Chủ nhà đã hủy thuê căn nhà bạn đã đăng kí thuê");
+            notification.setIdUser(idUserSendTo);
+        }
         notificationRepository.save(notification);
     }
 

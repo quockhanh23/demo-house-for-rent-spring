@@ -1,5 +1,6 @@
 package com.example.testspringweb.services.impl;
 
+import com.example.testspringweb.common.CommonConstant;
 import com.example.testspringweb.common.CommonUtils;
 import com.example.testspringweb.common.TransactionalConstant;
 import com.example.testspringweb.dto.TransactionalHistoryUser;
@@ -53,9 +54,13 @@ public class TransactionalServiceImpl implements TransactionalService {
 
     @Override
     public Transactional createTransactional(Transactional transactionalRequest) {
-        validateDate(transactionalRequest.getStartTime(), transactionalRequest.getEndTime());
+        long totalDay = validateDate(transactionalRequest.getStartTime(), transactionalRequest.getEndTime());
+        checkDateOfPast(transactionalRequest.getStartTime());
         House house = houseService.getDetailHouse(transactionalRequest.getIdHouse());
         UserDTOResponse userHost = userService.getDetailUser(house.getIdUser());
+        if (CommonConstant.INACTIVE.equals(userHost.getStatus())) {
+            throw new InvalidException("Bạn không thể thuê căn nhà này bởi vì chủ nhà đã ngừng hoạt động");
+        }
         UserDTOResponse userGuest = userService.getDetailUser(transactionalRequest.getIdUserGuest());
         transactionalRequest.setCreatedAt(new Date());
         transactionalRequest.setUpdatedAt(new Date());
@@ -66,13 +71,27 @@ public class TransactionalServiceImpl implements TransactionalService {
         transactionalRequest.setStatus(TransactionalConstant.PROCESSING);
         transactionalRequest.setStartTime(transactionalRequest.getStartTime());
         transactionalRequest.setEndTime(transactionalRequest.getEndTime());
-
+        transactionalRequest.setTotalDay((int) totalDay);
         validateTransactionalProgress(transactionalRequest);
 
         BigDecimal totalAmount = getTotalAmount(transactionalRequest, TransactionalConstant.CREATE);
         transactionalRequest.setTotalAmountExpected(totalAmount);
 
         return transactionalRepository.save(transactionalRequest);
+    }
+
+    private void checkDateOfPast(Date startTime) {
+        if (Objects.isNull(startTime)) return;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date dateWithZeroTime = calendar.getTime();
+        if (dateWithZeroTime.compareTo(startTime) > 0) {
+            throw new InvalidException("Bạn không thể đặt thuê nhà ở quá khứ");
+        }
     }
 
     private void validateTransactionalProgress(Transactional transactionalRequest) {
@@ -102,15 +121,23 @@ public class TransactionalServiceImpl implements TransactionalService {
         }
     }
 
-    private void validateDate(Date startDate, Date endDate) {
+    private long validateDate(Date startDate, Date endDate) {
         long numberDifference = commonService.getDateDifference(startDate, endDate);
         if (numberDifference <= 0) {
             throw new InvalidException("Ngày kết thúc phải lớn hơn ngày bắt đầu");
         }
+        return numberDifference;
     }
 
     @Override
     public Transactional updateTransactional(Long transactionalId, String status) {
+        if (TransactionalConstant.CANCELED.equalsIgnoreCase(status)) {
+            Transactional transactional = getDetailTransactional(transactionalId);
+            transactional.setStatus(TransactionalConstant.CANCELED);
+            transactional.setUpdatedAt(new Date());
+            transactional.setCancelReason("By host");
+            return transactionalRepository.save(transactional);
+        }
         if (TransactionalConstant.CONFIRM.equalsIgnoreCase(status)) {
             Transactional transactional = getDetailTransactional(transactionalId);
             transactional.setStatus(TransactionalConstant.CONFIRM);
@@ -210,6 +237,7 @@ public class TransactionalServiceImpl implements TransactionalService {
         }
         try {
             transactional.setStatus(TransactionalConstant.CANCELED);
+            transactional.setCancelReason("By user");
             transactionalRepository.save(transactional);
         } catch (Exception e) {
             throw new InvalidException(e.getMessage());

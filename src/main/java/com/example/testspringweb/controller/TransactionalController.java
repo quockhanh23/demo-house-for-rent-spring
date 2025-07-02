@@ -4,7 +4,7 @@ import com.example.testspringweb.dto.TransactionalHistoryUser;
 import com.example.testspringweb.models.Transactional;
 import com.example.testspringweb.services.CommonService;
 import com.example.testspringweb.services.TransactionalService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,10 +20,10 @@ import java.util.Objects;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/transactions")
+@RequiredArgsConstructor
 public class TransactionalController {
 
-    @Autowired
-    private TransactionalService transactionalService;
+    private final TransactionalService transactionalService;
 
     private final CommonService commonService = new CommonService();
 
@@ -67,11 +67,7 @@ public class TransactionalController {
     // Tổng thu nhập theo tháng
     @GetMapping("/totalMonthly")
     public ResponseEntity<Object> totalMonthly(@RequestParam Long userId, @RequestParam String month) {
-        try {
-            return new ResponseEntity<>(transactionalService.totalMonthly(userId, month), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(transactionalService.totalMonthly(userId, month), HttpStatus.OK);
     }
 
     @PostMapping("/createTransactional")
@@ -92,12 +88,8 @@ public class TransactionalController {
 
     @PutMapping("/updateTransactional")
     public ResponseEntity<Object> updateTransactional(@RequestParam Long transactionalId, @RequestParam String status) {
-        try {
-            Transactional transactional = transactionalService.updateTransactional(transactionalId, status);
-            return new ResponseEntity<>(transactional, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Transactional transactional = transactionalService.updateTransactional(transactionalId, status);
+        return new ResponseEntity<>(transactional, HttpStatus.OK);
     }
 
     @PostMapping("/checkIn")

@@ -12,7 +12,7 @@ import com.example.testspringweb.models.User;
 import com.example.testspringweb.models.UserPrinciple;
 import com.example.testspringweb.repository.RoleRepository;
 import com.example.testspringweb.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,22 +30,18 @@ import java.util.*;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    private JWTService jwtService;
+    private final JWTService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<Object> createUser(@RequestBody User user) {
@@ -99,6 +95,7 @@ public class UserController {
             throw new InvalidException("Tài khoản hoặc mật khẩu không đúng");
         }
         UserPrinciple userPrinciple = userService.loadUserByUsername(loginRequest.getUsername());
+        userService.checkUserInActive(userPrinciple);
         String jwt = jwtService.generateToken(userPrinciple);
         JwtResponse jwtResponse = new JwtResponse();
         jwtResponse.setId(userPrinciple.getId());

@@ -8,7 +8,7 @@ import com.example.testspringweb.models.Report;
 import com.example.testspringweb.repository.ReportRepository;
 import com.example.testspringweb.services.NotificationService;
 import com.example.testspringweb.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
@@ -22,16 +22,14 @@ import java.util.Optional;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/reposts")
+@RequiredArgsConstructor
 public class ReportController {
 
-    @Autowired
-    private ReportRepository reportRepository;
+    private final ReportRepository reportRepository;
 
-    @Autowired
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @GetMapping("/getAllRepostByIdHouse")
     public ResponseEntity<Object> getAllRepostByIdHouse(@RequestParam Long idHouse) {
@@ -54,7 +52,7 @@ public class ReportController {
         report.setStatus(CommonConstant.ACTIVE);
         reportRepository.save(report);
         notificationService.createNotification(report.getIdHouse(), report.getIdUserReport(),
-                NotificationConstant.NEW_REPORT);
+                NotificationConstant.NEW_REPORT, null);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
