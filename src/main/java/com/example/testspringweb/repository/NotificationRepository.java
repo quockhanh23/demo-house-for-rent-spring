@@ -18,6 +18,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     @Modifying
     @Transactional
-    @Query(value = "update notification set status = :status, updated_at = (current_timestamp) where id_user = :idUser", nativeQuery = true)
+    @Query(value = "update notification set status = :status, updated_at = (current_timestamp) where (id_user = :idUser) and (status != 'D')", nativeQuery = true)
     void updateAllNotificationByIdUser(@Param("idUser") Long idUser, @Param("status") String status);
 }
